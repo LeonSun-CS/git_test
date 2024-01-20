@@ -8,4 +8,8 @@ The fourth version: "Taylor Swift's fourth version: it's me hi, all the proble i
 
 Her latest song is 'You need to calm down' (dev's content)
 
+<<<<<<< HEAD
 Here master branch added new line: master branch. 
+=======
+Dev branch added one line: dev branch
+>>>>>>> dev
