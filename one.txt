@@ -7,3 +7,5 @@ The third version contents lays here.
 The fourth version: "Taylor Swift's fourth version: it's me hi, all the proble is me"
 
 Her latest song is 'You need to calm down' (dev's content)
+
+Here master branch added new line: master branch. 
