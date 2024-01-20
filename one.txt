@@ -13,3 +13,5 @@ Here master branch added new line: master branch.
 =======
 Dev branch added one line: dev branch
 >>>>>>> dev
+
+something added before pulling from the git server
