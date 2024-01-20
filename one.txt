@@ -14,4 +14,10 @@ Here master branch added new line: master branch.
 Dev branch added one line: dev branch
 >>>>>>> dev
 
+<<<<<<< HEAD
 something added before pulling from the git server
+=======
+Strong addition.
+>>>>>>> 4ea290d9f59cc4978194d45f1e7c83f69a3c2fea
+
+conflict resolved!
