@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Guide: Building a Home VPN Server to Bypass China's GFW</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #34495e;
+            padding: 15px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #3498db;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 5px solid;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .protocol-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .protocol-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .rating {
+            display: flex;
+            gap: 10px;
+        }
+
+        .rating-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .rating-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .rating-bar {
+            width: 60px;
+            height: 8px;
+            background: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rating-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            transition: width 0.3s;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .pros {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid #2ecc71;
+        }
+
+        .cons {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid #e74c3c;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        pre code {
+            background: none;
+            color: #ecf0f1;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 0 5px;
+        }
+
+        .badge-recommended {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-advanced {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .badge-experimental {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-stable {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .comparison-table {
+            overflow-x: auto;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .command-box {
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .copy-button:hover {
+            background: #2980b9;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .reference-link {
+            color: #3498db;
+            text-decoration: none;
+            word-wrap: break-word;
+        }
+
+        .reference-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Building a Home VPN Server to Bypass China's Great Firewall</h1>
+            <p>A Comprehensive Technical Guide - Updated 2025</p>
+        </header>
+
+        <nav>
+            <a href="#executive-summary">Summary</a>
+            <a href="#gfw-overview">GFW Overview</a>
+            <a href="#protocols">Protocols</a>
+            <a href="#recommended-stack">Recommended Stack</a>
+            <a href="#setup">Setup Guide</a>
+            <a href="#security">Security</a>
+            <a href="#optimization">Optimization</a>
+            <a href="#troubleshooting">Troubleshooting</a>
+        </nav>
+
+        <div class="content">
+            <!-- Executive Summary -->
+            <section id="executive-summary">
+                <h2>Executive Summary</h2>
+
+                <div class="alert alert-info">
+                    <strong>Purpose:</strong> This guide provides comprehensive, research-backed recommendations for building a home VPN server in the USA (using Spectrum ISP) that reliably bypasses China's Great Firewall (GFW) to provide unrestricted internet access for users in China.
+                </div>
+
+                <h3>Top Recommendations (2025)</h3>
+                <ol>
+                    <li><strong>Protocol:</strong> Xray with VLESS + REALITY + Vision + uTLS (most effective)</li>
+                    <li><strong>Backup Protocol:</strong> Trojan-GFW over TLS on port 443</li>
+                    <li><strong>Fallback Option:</strong> Shadowsocks with v2ray-plugin or Cloak obfuscation</li>
+                    <li><strong>CDN Integration:</strong> Cloudflare WebSocket for additional obfuscation layer</li>
+                    <li><strong>Port Selection:</strong> 443 (HTTPS) as primary, with obfuscation mandatory</li>
+                </ol>
+
+                <div class="alert alert-warning">
+                    <strong>Critical Success Factors:</strong>
+                    <ul>
+                        <li>Traffic obfuscation is MANDATORY - plain protocols will be detected and blocked</li>
+                        <li>Use port 443 to mimic HTTPS traffic</li>
+                        <li>Implement TLS 1.3 with proper fingerprint masking (uTLS)</li>
+                        <li>Deploy on datacenter IPs with caution or use residential IP when possible</li>
+                        <li>Maintain multiple backup servers with different protocols</li>
+                        <li>Keep all software updated to counter new GFW detection methods</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- GFW Overview -->
+            <section id="gfw-overview">
+                <h2>Understanding the Great Firewall (GFW)</h2>
+
+                <h3>Detection Methods (2024-2025 Updates)</h3>
+
+                <h4>1. Deep Packet Inspection (DPI)</h4>
+                <p>The GFW analyzes both headers and payloads of data packets, identifying traffic patterns specific to protocols. As of November 2021, the GFW deployed advanced censorship that passively detects and blocks fully encrypted traffic in real-time.</p>
+
+                <div class="alert alert-danger">
+                    <strong>Detection Heuristics:</strong> The GFW applies crude but efficient heuristics based on:
+                    <ul>
+                        <li>Fingerprints of common protocols</li>
+                        <li>Fraction of set bits in packets</li>
+                        <li>Number, fraction, and position of printable ASCII characters</li>
+                        <li>Packet size and entropy of first data packet</li>
+                    </ul>
+                </div>
+
+                <h4>2. Active Probing</h4>
+                <p>When the GFW detects suspicious traffic, it sends active probes to the server to confirm it's a circumvention tool. On average, probes arrive within half a second of detecting potential proxy traffic.</p>
+
+                <ul>
+                    <li><strong>Replay-based probes:</strong> Replays captured traffic to test server response</li>
+                    <li><strong>Random probes:</strong> Sends crafted packets with varied lengths</li>
+                    <li><strong>TLS probing:</strong> Attempts TLS handshakes to detect proxy servers</li>
+                </ul>
+
+                <h4>3. QUIC/SNI-based Censorship (New 2024)</h4>
+                <p>Starting April 7, 2024, the GFW began blocking QUIC connections to specific domains by decrypting QUIC Initial packets at scale using cryptographic analysis.</p>
+
+                <h4>4. TLS Fingerprinting</h4>
+                <p>The GFW analyzes TLS handshakes to identify:
+                <ul>
+                    <li>Cipher suites and their order</li>
+                    <li>TLS extensions</li>
+                    <li>TLS version field</li>
+                    <li>Server Name Indication (SNI) - even encrypted SNI (ESNI) is now blocked</li>
+                    <li>"TLS-in-TLS" patterns (double encryption) that indicate proxy usage</li>
+                </ul>
+
+                <h4>5. Traffic Pattern Analysis</h4>
+                <p>The GFW examines timing patterns, packet sizes, and connection characteristics to identify VPN traffic even when encrypted.</p>
+
+                <h4>6. Regional Censorship Layers</h4>
+                <p>Research in 2025 revealed "A Wall Behind A Wall" - regional firewalls (like Henan Firewall) that employ more aggressive blocking than the national GFW, blocking 5x more domains.</p>
+
+                <div class="alert alert-warning">
+                    <strong>August 2025 Port 443 Incident:</strong> On August 20, 2025, the GFW exhibited anomalous behavior by unconditionally disrupting ALL connections on TCP port 443 for over an hour, causing massive internet disruption. This demonstrates the GFW's capability for large-scale interference.
+                </div>
+
+                <h3>IP Blocking Patterns</h3>
+                <p>The GFW strategically limits blocking to specific IP ranges of popular datacenters, applying probabilistic blocking to 26% of connections. Datacenter IPs experience 30-50% blocking rates, while residential IPs have 99% lower detection rates.</p>
+
+                <h3>IPv6 Considerations</h3>
+                <div class="alert alert-success">
+                    <strong>Opportunity:</strong> IPv6 currently has less stringent blocking than IPv4. CERNET (academic network) users can access blocked websites via IPv6. However, DNS infrastructure still runs over IPv4, so DNS-based blocking still applies.
+                </div>
+            </section>
+
+            <!-- Protocol Analysis -->
+            <section id="protocols">
+                <h2>Protocol Analysis & Comparison</h2>
+
+                <!-- Xray/V2Ray -->
+                <div class="protocol-card">
+                    <div class="protocol-header">
+                        <h3>Xray/V2Ray with REALITY Protocol <span class="badge badge-recommended">MOST RECOMMENDED</span></h3>
+                    </div>
+
+                    <div class="rating">
+                        <div class="rating-item">
+                            <span class="rating-label">Security</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 100%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Stealth</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 100%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Speed</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 75%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Ease of Setup</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 50%"></div></div>
+                        </div>
+                    </div>
+
+                    <p><strong>Description:</strong> Xray is an advanced fork of V2Ray with the REALITY protocol - the cutting-edge solution for 2025. REALITY eliminates server-side TLS fingerprints and provides superior camouflage.</p>
+
+                    <div class="alert alert-info">
+                        <strong>How REALITY Works:</strong> It obtains a normal Server Hello packet during TLS handshake from reputable websites (like Apple or Bing), then uses this normal handshake to interact with clients. This makes traffic completely indistinguishable from legitimate HTTPS connections.
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>No domain name or DNS records required</li>
+                                <li>Eliminates TLS fingerprint of the server</li>
+                                <li>Full TLS using SNI of camouflage website</li>
+                                <li>Traffic obfuscation prevents DPI detection</li>
+                                <li>Multiple protocol support (VLESS, VMess)</li>
+                                <li>Advanced routing capabilities</li>
+                                <li>uTLS integration prevents client fingerprinting</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Considerations</h4>
+                            <ul>
+                                <li>Complex configuration for beginners</li>
+                                <li>Requires technical knowledge</li>
+                                <li>Multiple components to maintain</li>
+                                <li>Documentation primarily in Chinese</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Recommended Configuration:</h4>
+                    <p><strong>VLESS + VISION + TCP + REALITY</strong> - Considered the safest option for China</p>
+
+                    <div class="alert alert-warning">
+                        <strong>Important:</strong> Don't run REALITY-based and less secure protocols on the same VPS, as less secure protocols might cause GFW to block the entire server IP.
+                    </div>
+                </div>
+
+                <!-- Trojan -->
+                <div class="protocol-card">
+                    <div class="protocol-header">
+                        <h3>Trojan-GFW <span class="badge badge-recommended">RECOMMENDED</span></h3>
+                    </div>
+
+                    <div class="rating">
+                        <div class="rating-item">
+                            <span class="rating-label">Security</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 90%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Stealth</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 95%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Speed</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 70%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Ease of Setup</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 70%"></div></div>
+                        </div>
+                    </div>
+
+                    <p><strong>Description:</strong> Trojan masquerades proxy traffic as HTTPS to evade censorship. It imitates HTTPS to trick the GFW into thinking it's regular web traffic.</p>
+
+                    <div class="alert alert-info">
+                        <strong>How Trojan Works:</strong> All connections use real TLS encryption (not mimicry). Unauthenticated requests are redirected to a preset endpoint (real web server), so the Trojan server behaves exactly like a regular HTTPS web server to probes.
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>Real TLS encryption (not mimicry)</li>
+                                <li>Indistinguishable from regular HTTPS</li>
+                                <li>Real web server responds to probes</li>
+                                <li>Lightweight C++ implementation</li>
+                                <li>Well-documented</li>
+                                <li>Strong community support</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Considerations</h4>
+                            <ul>
+                                <li>Requires valid domain name</li>
+                                <li>Requires SSL/TLS certificate</li>
+                                <li>Slower than WireGuard</li>
+                                <li>More resource intensive than Shadowsocks</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Requirements:</h4>
+                    <ul>
+                        <li>Valid domain name pointing to your server</li>
+                        <li>SSL/TLS certificate (free via Let's Encrypt)</li>
+                        <li>Web server (Nginx/Caddy) as camouflage</li>
+                    </ul>
+                </div>
+
+                <!-- Shadowsocks -->
+                <div class="protocol-card">
+                    <div class="protocol-header">
+                        <h3>Shadowsocks with Plugins <span class="badge badge-stable">STABLE</span></h3>
+                    </div>
+
+                    <div class="rating">
+                        <div class="rating-item">
+                            <span class="rating-label">Security</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 80%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Stealth</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 60%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Speed</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 90%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Ease of Setup</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 85%"></div></div>
+                        </div>
+                    </div>
+
+                    <p><strong>Description:</strong> Shadowsocks is a lightweight SOCKS5 proxy originally designed to overcome China's firewall. Modern Shadowsocks MUST use plugins for obfuscation to remain effective.</p>
+
+                    <div class="alert alert-danger">
+                        <strong>Warning:</strong> Plain Shadowsocks without obfuscation is now detectable by the GFW. You MUST use plugins like v2ray-plugin, Cloak, or simple-obfs.
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>Fast and lightweight</li>
+                                <li>Easy to set up and configure</li>
+                                <li>Multiple client implementations</li>
+                                <li>Very small resource footprint</li>
+                                <li>Works well on mobile devices</li>
+                                <li>SIP003 plugin ecosystem</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Considerations</h4>
+                            <ul>
+                                <li>Increasingly detectable without plugins</li>
+                                <li>GFW can detect via packet analysis</li>
+                                <li>Vulnerable to active probing attacks</li>
+                                <li>Requires AEAD ciphers (v3.3.1+)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Critical Configuration Requirements:</h4>
+                    <ul>
+                        <li><strong>Version:</strong> shadowsocks-libev v3.3.1 or above</li>
+                        <li><strong>Cipher:</strong> AEAD ciphers only (chacha20-ietf-poly1305, aes-256-gcm, aes-192-gcm, aes-128-gcm)</li>
+                        <li><strong>Password:</strong> Strong random password (avoid partitioning oracle attacks)</li>
+                        <li><strong>Plugin:</strong> v2ray-plugin (WebSocket+TLS) or Cloak mandatory</li>
+                    </ul>
+
+                    <h4>Recommended Plugins:</h4>
+                    <ul>
+                        <li><strong>v2ray-plugin:</strong> WebSocket + TLS obfuscation (most popular)</li>
+                        <li><strong>Cloak:</strong> Cryptographically obfuscates traffic as legitimate HTTPS</li>
+                        <li><strong>simple-obfs:</strong> Lightweight HTTP/TLS obfuscation</li>
+                    </ul>
+                </div>
+
+                <!-- WireGuard -->
+                <div class="protocol-card">
+                    <div class="protocol-header">
+                        <h3>WireGuard <span class="badge badge-experimental">NOT RECOMMENDED FOR CHINA</span></h3>
+                    </div>
+
+                    <div class="rating">
+                        <div class="rating-item">
+                            <span class="rating-label">Security</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 100%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Stealth</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 20%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Speed</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 100%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Ease of Setup</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 90%"></div></div>
+                        </div>
+                    </div>
+
+                    <p><strong>Description:</strong> WireGuard is the fastest VPN protocol with modern cryptography, but it has an apparent traffic signature that makes it easily detectable by the GFW.</p>
+
+                    <div class="alert alert-danger">
+                        <strong>Detection:</strong> WireGuard is detected and blocked within 24 hours in most Chinese regions. The protocol explicitly considers obfuscation a non-goal, making it always detectable.
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>Fastest VPN protocol available</li>
+                                <li>Modern cryptography (Noise protocol)</li>
+                                <li>Minimal attack surface</li>
+                                <li>Built into Linux kernel</li>
+                                <li>Very simple configuration</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Considerations</h4>
+                            <ul>
+                                <li>Easily detected by GFW heuristics</li>
+                                <li>UDP protocol is blocked</li>
+                                <li>Obfuscation explicitly not a goal</li>
+                                <li>Blocked within 24 hours typically</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Obfuscation Options (Advanced):</h4>
+                    <p>If you still want to try WireGuard, these obfuscation methods may help:</p>
+                    <ul>
+                        <li><strong>TCP Tunneling:</strong> Encapsulate WireGuard in TCP tunnel</li>
+                        <li><strong>swgp-go:</strong> Userspace obfuscation proxy that super-encrypts packets</li>
+                        <li><strong>udp2raw-tunnel:</strong> Tunnel UDP through fake TCP</li>
+                    </ul>
+
+                    <div class="alert alert-info">
+                        <strong>Use Case:</strong> Only suitable for short-term, low-traffic use in China. Not recommended for reliable long-term access.
+                    </div>
+                </div>
+
+                <!-- NaiveProxy -->
+                <div class="protocol-card">
+                    <div class="protocol-header">
+                        <h3>NaiveProxy <span class="badge badge-advanced">ADVANCED</span></h3>
+                    </div>
+
+                    <div class="rating">
+                        <div class="rating-item">
+                            <span class="rating-label">Security</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 95%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Stealth</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 95%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Speed</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 85%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Ease of Setup</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 60%"></div></div>
+                        </div>
+                    </div>
+
+                    <p><strong>Description:</strong> NaiveProxy uses Chromium's network stack to camouflage traffic, providing strong censorship resistance and low detectability.</p>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>Uses Chrome's network stack</li>
+                                <li>Survived large-scale TLS blocking</li>
+                                <li>Mitigates TLS fingerprint issues</li>
+                                <li>Strong censorship resistance</li>
+                                <li>Works with Caddy web server</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Considerations</h4>
+                            <ul>
+                                <li>Requires custom Caddy build</li>
+                                <li>More complex setup</li>
+                                <li>Limited client support</li>
+                                <li>Requires domain name</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Setup Requirements:</h4>
+                    <ul>
+                        <li>Caddy with forwardproxy plugin (naiveproxy fork)</li>
+                        <li>Valid domain name and SSL certificate</li>
+                        <li>NaiveProxy client on user devices</li>
+                    </ul>
+                </div>
+
+                <!-- Hysteria -->
+                <div class="protocol-card">
+                    <div class="protocol-header">
+                        <h3>Hysteria 2 <span class="badge badge-experimental">EXPERIMENTAL</span></h3>
+                    </div>
+
+                    <div class="rating">
+                        <div class="rating-item">
+                            <span class="rating-label">Security</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 85%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Stealth</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 40%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Speed</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 95%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Ease of Setup</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 70%"></div></div>
+                        </div>
+                    </div>
+
+                    <p><strong>Description:</strong> Hysteria 2 is a QUIC-based protocol with Brutal congestion control for lossy networks, designed for poor network conditions.</p>
+
+                    <div class="alert alert-danger">
+                        <strong>Current Status:</strong> Since April 2024, the GFW has implemented SNI-based QUIC censorship. Hysteria domains and IPs generating significant UDP traffic are being blocked. Not recommended as primary protocol for China.
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>Excellent for lossy connections</li>
+                                <li>Brutal congestion control</li>
+                                <li>Fast in poor network conditions</li>
+                                <li>Based on QUIC protocol</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Considerations</h4>
+                            <ul>
+                                <li>GFW blocks QUIC SNI (since April 2024)</li>
+                                <li>UDP traffic is monitored and marked</li>
+                                <li>Custom domains get blocked</li>
+                                <li>High UDP traffic = IP blocking</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Circumvention Strategies:</h4>
+                    <ul>
+                        <li>Precede with random UDP datagram</li>
+                        <li>Use destination ports >= source port</li>
+                        <li>Limit UDP traffic volume</li>
+                    </ul>
+                </div>
+
+                <!-- Outline VPN -->
+                <div class="protocol-card">
+                    <div class="protocol-header">
+                        <h3>Outline VPN (Jigsaw/Google) <span class="badge badge-stable">USER-FRIENDLY</span></h3>
+                    </div>
+
+                    <div class="rating">
+                        <div class="rating-item">
+                            <span class="rating-label">Security</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 85%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Stealth</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 70%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Speed</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 85%"></div></div>
+                        </div>
+                        <div class="rating-item">
+                            <span class="rating-label">Ease of Setup</span>
+                            <div class="rating-bar"><div class="rating-fill" style="width: 95%"></div></div>
+                        </div>
+                    </div>
+
+                    <p><strong>Description:</strong> Outline is a user-friendly Shadowsocks deployment tool developed by Jigsaw (Google). It makes Shadowsocks setup extremely simple with graphical management interface.</p>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li>Easiest setup process</li>
+                                <li>Graphical management interface</li>
+                                <li>Automatic Shadowsocks configuration</li>
+                                <li>Cross-platform clients</li>
+                                <li>Generates long random secrets automatically</li>
+                                <li>Resistant to active probes (latest version)</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Considerations</h4>
+                            <ul>
+                                <li>Based on Shadowsocks (detection risk)</li>
+                                <li>GitHub download required (blocked in China)</li>
+                                <li>Not as stealthy as Trojan/REALITY</li>
+                                <li>GFW may eventually block</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Best Practices:</h4>
+                    <ul>
+                        <li>Use DigitalOcean or AWS (accessible from China for setup)</li>
+                        <li>Download manager before traveling to China</li>
+                        <li>Use as backup to more advanced protocols</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Comparison Table -->
+            <section id="comparison">
+                <h2>Protocol Comparison Matrix</h2>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Protocol</th>
+                                <th>Stealth Rating</th>
+                                <th>Speed</th>
+                                <th>Setup Difficulty</th>
+                                <th>China Effectiveness (2025)</th>
+                                <th>Best Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Xray REALITY</strong></td>
+                                <td>10/10</td>
+                                <td>7.5/10</td>
+                                <td>Advanced</td>
+                                <td>Excellent</td>
+                                <td>Primary protocol for maximum security</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Trojan-GFW</strong></td>
+                                <td>9.5/10</td>
+                                <td>7/10</td>
+                                <td>Moderate</td>
+                                <td>Excellent</td>
+                                <td>Best balance of stealth and ease</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Shadowsocks + Plugins</strong></td>
+                                <td>6/10</td>
+                                <td>9/10</td>
+                                <td>Easy</td>
+                                <td>Good (with plugins)</td>
+                                <td>Fast backup protocol</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NaiveProxy</strong></td>
+                                <td>9.5/10</td>
+                                <td>8.5/10</td>
+                                <td>Advanced</td>
+                                <td>Excellent</td>
+                                <td>Advanced users wanting Chrome-level stealth</td>
+                            </tr>
+                            <tr>
+                                <td><strong>WireGuard</strong></td>
+                                <td>2/10</td>
+                                <td>10/10</td>
+                                <td>Easy</td>
+                                <td>Poor (blocked quickly)</td>
+                                <td>NOT recommended for China</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hysteria 2</strong></td>
+                                <td>4/10</td>
+                                <td>9.5/10</td>
+                                <td>Moderate</td>
+                                <td>Poor (QUIC blocked)</td>
+                                <td>NOT recommended since April 2024</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Outline VPN</strong></td>
+                                <td>7/10</td>
+                                <td>8.5/10</td>
+                                <td>Very Easy</td>
+                                <td>Good</td>
+                                <td>Non-technical users, quick setup</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Recommended Stack -->
+            <section id="recommended-stack">
+                <h2>Recommended Technical Stack</h2>
+
+                <h3>Primary Configuration (Maximum Reliability)</h3>
+
+                <div class="alert alert-success">
+                    <strong>The Ultimate Setup:</strong> Multi-protocol deployment with Xray REALITY as primary and Trojan as backup
+                </div>
+
+                <h4>Architecture Overview:</h4>
+                <ol>
+                    <li><strong>Primary Server:</strong> Xray with VLESS + REALITY + Vision + uTLS</li>
+                    <li><strong>Secondary Server (different IP):</strong> Trojan-GFW with Nginx/Caddy</li>
+                    <li><strong>Tertiary Server:</strong> Shadowsocks-libev with v2ray-plugin</li>
+                    <li><strong>Optional CDN Layer:</strong> Cloudflare WebSocket for additional obfuscation</li>
+                </ol>
+
+                <h3>Component Selection</h3>
+
+                <h4>Server Side:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Recommendation</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Primary Protocol</td>
+                            <td>Xray-core (VLESS+REALITY)</td>
+                            <td>Most advanced anti-detection, no domain needed</td>
+                        </tr>
+                        <tr>
+                            <td>Backup Protocol</td>
+                            <td>Trojan-GFW</td>
+                            <td>Proven reliability, real HTTPS mimicry</td>
+                        </tr>
+                        <tr>
+                            <td>Web Server (for Trojan)</td>
+                            <td>Caddy or Nginx</td>
+                            <td>Camouflage and automatic HTTPS</td>
+                        </tr>
+                        <tr>
+                            <td>Operating System</td>
+                            <td>Ubuntu 22.04 LTS or Debian 11</td>
+                            <td>Stability and compatibility</td>
+                        </tr>
+                        <tr>
+                            <td>Firewall</td>
+                            <td>UFW + fail2ban</td>
+                            <td>Security and anti-probing</td>
+                        </tr>
+                        <tr>
+                            <td>CDN (Optional)</td>
+                            <td>Cloudflare</td>
+                            <td>Free, reliable WebSocket support</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Client Side:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Recommended Client</th>
+                            <th>Alternative</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Windows</td>
+                            <td>v2rayN</td>
+                            <td>Qv2ray, Clash for Windows</td>
+                        </tr>
+                        <tr>
+                            <td>macOS</td>
+                            <td>V2rayU</td>
+                            <td>Qv2ray, ClashX</td>
+                        </tr>
+                        <tr>
+                            <td>Android</td>
+                            <td>v2rayNG</td>
+                            <td>SagerNet, Clash for Android</td>
+                        </tr>
+                        <tr>
+                            <td>iOS</td>
+                            <td>Shadowrocket (paid)</td>
+                            <td>Quantumult X, Stash</td>
+                        </tr>
+                        <tr>
+                            <td>Linux</td>
+                            <td>Qv2ray</td>
+                            <td>v2ray command line</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Port and Protocol Selection</h3>
+
+                <h4>Recommended Ports:</h4>
+                <ul>
+                    <li><strong>Port 443 (Primary):</strong> Standard HTTPS port, rarely blocked</li>
+                    <li><strong>Port 80 (Fallback):</strong> HTTP port, also common</li>
+                    <li><strong>Avoid:</strong> Common VPN ports (1194, 500, 4500) - easily flagged</li>
+                </ul>
+
+                <div class="alert alert-warning">
+                    <strong>Port 443 Alone Is Not Enough:</strong> While port 443 helps avoid basic filtering, the GFW uses DPI to detect OpenVPN and other protocols even on port 443. You MUST use proper obfuscation.
+                </div>
+
+                <h4>Transport Protocol:</h4>
+                <ul>
+                    <li><strong>TCP (Recommended):</strong> More reliable, less detectable</li>
+                    <li><strong>UDP (Avoid):</strong> GFW actively monitors and blocks high UDP traffic</li>
+                    <li><strong>WebSocket over TLS (Best):</strong> Looks exactly like HTTPS traffic</li>
+                </ul>
+
+                <h3>Domain and DNS Considerations</h3>
+
+                <h4>Domain Requirements:</h4>
+                <ul>
+                    <li><strong>Xray REALITY:</strong> No domain needed!</li>
+                    <li><strong>Trojan:</strong> Valid domain name required</li>
+                    <li><strong>V2Ray WebSocket:</strong> Domain recommended but not required</li>
+                    <li><strong>Shadowsocks:</strong> No domain needed</li>
+                </ul>
+
+                <h4>DNS Best Practices:</h4>
+                <ul>
+                    <li>Use privacy-respecting DNS (Cloudflare 1.1.1.1, Quad9)</li>
+                    <li>Consider DNSCrypt to encrypt DNS queries</li>
+                    <li>Client should use DNS over HTTPS (DoH)</li>
+                    <li>Server DNS is visible - choose carefully</li>
+                </ul>
+            </section>
+
+            <!-- CDN Integration -->
+            <section id="cdn-integration">
+                <h2>CDN Integration & Domain Fronting</h2>
+
+                <h3>Cloudflare WebSocket Configuration</h3>
+
+                <p>Cloudflare's CDN can add an extra layer of obfuscation by routing traffic through their global network, making it harder for the GFW to identify and block your server.</p>
+
+                <div class="alert alert-info">
+                    <strong>How it Works:</strong> Client connects via WebSocket to Cloudflare CDN, which forwards to Caddy reverse proxy, which connects to your Xray/V2Ray server. The GFW sees only Cloudflare IPs and HTTPS traffic.
+                </div>
+
+                <h4>Advantages:</h4>
+                <ul>
+                    <li>Your server IP is hidden behind Cloudflare</li>
+                    <li>Traffic appears as regular HTTPS to Cloudflare</li>
+                    <li>Global CDN provides acceleration</li>
+                    <li>Free tier available</li>
+                    <li>SSL/TLS handled automatically</li>
+                </ul>
+
+                <h4>Configuration Steps:</h4>
+                <ol>
+                    <li>Register domain with Cloudflare DNS</li>
+                    <li>Enable "Proxied" (orange cloud) for DNS record</li>
+                    <li>Configure V2Ray/Xray with WebSocket transport</li>
+                    <li>Set up Caddy/Nginx as reverse proxy</li>
+                    <li>Enable TLS in Cloudflare (Full or Full Strict mode)</li>
+                </ol>
+
+                <h3>Domain Fronting (Advanced)</h3>
+
+                <div class="alert alert-warning">
+                    <strong>Status:</strong> Domain fronting has been restricted by major CDN providers (AWS, Google, Microsoft) since 2018. However, it remains feasible with 22 out of 30 tested CDNs including Akamai and Fastly.
+                </div>
+
+                <p><strong>How Domain Fronting Works:</strong> A mismatch between the SNI extension (visible domain) and the HTTP Host header (covert domain). The GFW sees connection to allowed domain, but actual traffic goes to blocked domain.</p>
+
+                <h4>Why Censors Can't Block It:</h4>
+                <p>Blocking the front domain would cause massive collateral damage. When Russia tried blocking Telegram's domain fronting in 2018, they blocked 15.8 million IPs belonging to Google and Amazon CDNs, causing outages for banks, retailers, and major websites.</p>
+
+                <h4>Current Limitations:</h4>
+                <ul>
+                    <li>Major providers (Cloudflare, AWS CloudFront, Azure, GCP) block domain fronting</li>
+                    <li>Requires finding CDN that still allows it</li>
+                    <li>Complex to set up and maintain</li>
+                    <li>May be detected by advanced DPI</li>
+                </ul>
+            </section>
+
+            <!-- Setup Guide -->
+            <section id="setup">
+                <h2>Step-by-Step Setup Guide</h2>
+
+                <h3>Option 1: Xray with REALITY (Recommended for Advanced Users)</h3>
+
+                <div class="alert alert-info">
+                    <strong>Time Required:</strong> 30-45 minutes | <strong>Difficulty:</strong> Advanced | <strong>Effectiveness:</strong> Maximum
+                </div>
+
+                <h4><span class="step-number">1</span> Prepare Your Server</h4>
+
+                <p><strong>Server Requirements:</strong></p>
+                <ul>
+                    <li>Ubuntu 20.04/22.04 or Debian 11</li>
+                    <li>Minimum 1 CPU core, 1GB RAM</li>
+                    <li>20GB disk space</li>
+                    <li>Root or sudo access</li>
+                </ul>
+
+                <p><strong>Initial Setup:</strong></p>
+                <div class="command-box">
+                    <pre><code># Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install required packages
+sudo apt install curl wget unzip -y
+
+# Enable BBR congestion control for better performance
+echo "net.core.default_qdisc=fq" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p</code></pre>
+                </div>
+
+                <h4><span class="step-number">2</span> Install Xray-core</h4>
+
+                <div class="command-box">
+                    <pre><code># Download and install Xray
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+
+# Verify installation
+xray version</code></pre>
+                </div>
+
+                <h4><span class="step-number">3</span> Configure Xray with REALITY</h4>
+
+                <p>Generate UUID and keys:</p>
+                <div class="command-box">
+                    <pre><code># Generate UUID for user authentication
+xray uuid
+
+# Generate REALITY keys
+xray x25519
+
+# Choose a legitimate website for SNI (e.g., apple.com, microsoft.com, cloudflare.com)</code></pre>
+                </div>
+
+                <p>Create configuration file <code>/usr/local/etc/xray/config.json</code>:</p>
+                <div class="command-box">
+                    <pre><code>{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 443,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "YOUR-UUID-HERE",
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "www.apple.com:443",
+          "xver": 0,
+          "serverNames": [
+            "www.apple.com"
+          ],
+          "privateKey": "YOUR-PRIVATE-KEY-HERE",
+          "shortIds": [
+            "",
+            "0123456789abcdef"
+          ]
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    }
+  ]
+}</code></pre>
+                </div>
+
+                <h4><span class="step-number">4</span> Configure Firewall</h4>
+
+                <div class="command-box">
+                    <pre><code># Install and configure UFW
+sudo apt install ufw -y
+
+# Allow SSH (IMPORTANT: Do this first!)
+sudo ufw allow 22/tcp
+
+# Allow Xray port
+sudo ufw allow 443/tcp
+
+# Enable firewall
+sudo ufw enable
+
+# Check status
+sudo ufw status</code></pre>
+                </div>
+
+                <h4><span class="step-number">5</span> Start Xray Service</h4>
+
+                <div class="command-box">
+                    <pre><code># Enable and start Xray
+sudo systemctl enable xray
+sudo systemctl start xray
+
+# Check status
+sudo systemctl status xray
+
+# View logs
+sudo journalctl -u xray -f</code></pre>
+                </div>
+
+                <h4><span class="step-number">6</span> Configure Client</h4>
+
+                <p>Client configuration string format:</p>
+                <div class="command-box">
+                    <pre><code>vless://YOUR-UUID@YOUR-SERVER-IP:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.apple.com&fp=chrome&pbk=YOUR-PUBLIC-KEY&sid=0123456789abcdef&type=tcp&headerType=none#MyXrayServer</code></pre>
+                </div>
+
+                <p>Use this in v2rayN (Windows), v2rayNG (Android), or Shadowrocket (iOS)</p>
+
+                <h3>Option 2: Trojan with Nginx (Balanced Approach)</h3>
+
+                <div class="alert alert-info">
+                    <strong>Time Required:</strong> 45-60 minutes | <strong>Difficulty:</strong> Moderate | <strong>Effectiveness:</strong> Excellent
+                </div>
+
+                <h4><span class="step-number">1</span> Prerequisites</h4>
+                <ul>
+                    <li>Domain name (e.g., vpn.yourdomain.com)</li>
+                    <li>Domain pointed to your server IP (A record)</li>
+                    <li>Ports 80 and 443 available</li>
+                </ul>
+
+                <h4><span class="step-number">2</span> Install Nginx and Certbot</h4>
+
+                <div class="command-box">
+                    <pre><code># Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install Nginx
+sudo apt install nginx -y
+
+# Install Certbot for Let's Encrypt SSL
+sudo apt install certbot python3-certbot-nginx -y
+
+# Obtain SSL certificate
+sudo certbot --nginx -d vpn.yourdomain.com
+
+# Test auto-renewal
+sudo certbot renew --dry-run</code></pre>
+                </div>
+
+                <h4><span class="step-number">3</span> Install Trojan-GFW</h4>
+
+                <div class="command-box">
+                    <pre><code># Download latest Trojan release
+wget https://github.com/trojan-gfw/trojan/releases/download/v1.16.0/trojan-1.16.0-linux-amd64.tar.xz
+
+# Extract
+tar -xf trojan-1.16.0-linux-amd64.tar.xz
+
+# Move to /usr/local/bin
+sudo mv trojan/trojan /usr/local/bin/
+sudo chmod +x /usr/local/bin/trojan
+
+# Create config directory
+sudo mkdir -p /usr/local/etc/trojan
+sudo mkdir -p /var/log/trojan</code></pre>
+                </div>
+
+                <h4><span class="step-number">4</span> Configure Trojan</h4>
+
+                <p>Create <code>/usr/local/etc/trojan/config.json</code>:</p>
+                <div class="command-box">
+                    <pre><code>{
+    "run_type": "server",
+    "local_addr": "0.0.0.0",
+    "local_port": 443,
+    "remote_addr": "127.0.0.1",
+    "remote_port": 80,
+    "password": [
+        "YOUR-STRONG-PASSWORD-HERE"
+    ],
+    "log_level": 1,
+    "ssl": {
+        "cert": "/etc/letsencrypt/live/vpn.yourdomain.com/fullchain.pem",
+        "key": "/etc/letsencrypt/live/vpn.yourdomain.com/privkey.pem",
+        "key_password": "",
+        "cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384",
+        "cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+        "prefer_server_cipher": true,
+        "alpn": [
+            "http/1.1"
+        ],
+        "reuse_session": true,
+        "session_ticket": false,
+        "session_timeout": 600,
+        "plain_http_response": "",
+        "curves": "",
+        "dhparam": ""
+    },
+    "tcp": {
+        "prefer_ipv4": false,
+        "no_delay": true,
+        "keep_alive": true,
+        "reuse_port": false,
+        "fast_open": false,
+        "fast_open_qlen": 20
+    },
+    "mysql": {
+        "enabled": false
+    }
+}</code></pre>
+                </div>
+
+                <h4><span class="step-number">5</span> Configure Nginx as Fallback</h4>
+
+                <p>Edit <code>/etc/nginx/sites-available/default</code>:</p>
+                <div class="command-box">
+                    <pre><code>server {
+    listen 127.0.0.1:80;
+    server_name vpn.yourdomain.com;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}</code></pre>
+                </div>
+
+                <p>Reload Nginx:</p>
+                <div class="command-box">
+                    <pre><code>sudo nginx -t
+sudo systemctl reload nginx</code></pre>
+                </div>
+
+                <h4><span class="step-number">6</span> Create Systemd Service</h4>
+
+                <p>Create <code>/etc/systemd/system/trojan.service</code>:</p>
+                <div class="command-box">
+                    <pre><code>[Unit]
+Description=Trojan-GFW
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/trojan -c /usr/local/etc/trojan/config.json
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+                </div>
+
+                <p>Enable and start:</p>
+                <div class="command-box">
+                    <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable trojan
+sudo systemctl start trojan
+sudo systemctl status trojan</code></pre>
+                </div>
+
+                <h3>Option 3: Outline VPN (Easiest - Recommended for Beginners)</h3>
+
+                <div class="alert alert-success">
+                    <strong>Time Required:</strong> 10-15 minutes | <strong>Difficulty:</strong> Beginner | <strong>Effectiveness:</strong> Good
+                </div>
+
+                <h4><span class="step-number">1</span> Download Outline Manager</h4>
+                <p>Visit GitHub (before going to China): <a href="https://github.com/Jigsaw-Code/outline-server/releases" class="reference-link">https://github.com/Jigsaw-Code/outline-server/releases</a></p>
+
+                <h4><span class="step-number">2</span> Choose VPS Provider</h4>
+                <ul>
+                    <li>DigitalOcean (recommended - accessible from China)</li>
+                    <li>AWS Lightsail</li>
+                    <li>Vultr</li>
+                    <li>Linode</li>
+                </ul>
+
+                <h4><span class="step-number">3</span> Deploy Server</h4>
+                <ol>
+                    <li>Open Outline Manager</li>
+                    <li>Click "Set up Outline anywhere"</li>
+                    <li>Choose your VPS provider or use "Set up" for manual installation</li>
+                    <li>Follow on-screen instructions</li>
+                    <li>Copy the installation command and run on your server</li>
+                </ol>
+
+                <h4><span class="step-number">4</span> Add Users</h4>
+                <ol>
+                    <li>Click "Add a new key" in Outline Manager</li>
+                    <li>Copy the access key</li>
+                    <li>Share with your friend in China</li>
+                </ol>
+
+                <h4><span class="step-number">5</span> Install Client</h4>
+                <p>Download Outline Client from:</p>
+                <ul>
+                    <li>Windows/Mac/Linux: <a href="https://getoutline.org/" class="reference-link">https://getoutline.org/</a></li>
+                    <li>Android: Google Play Store (download before China)</li>
+                    <li>iOS: App Store (download before China)</li>
+                </ul>
+
+                <h3>Home Server Setup (Spectrum ISP)</h3>
+
+                <div class="alert alert-warning">
+                    <strong>Important Considerations for Home Servers:</strong>
+                    <ul>
+                        <li>Spectrum may use CGNAT - contact them to opt out</li>
+                        <li>Dynamic IP may change - use Dynamic DNS (DDNS)</li>
+                        <li>Some ports may be blocked by Spectrum</li>
+                        <li>Upload bandwidth typically limited</li>
+                        <li>Power outages and ISP downtime affect availability</li>
+                    </ul>
+                </div>
+
+                <h4>Port Forwarding on Spectrum Router:</h4>
+                <ol>
+                    <li>Access Spectrum router admin interface (usually 192.168.1.1)</li>
+                    <li>Log in with admin credentials</li>
+                    <li>Go to Services > Router > Advanced Settings (or Advanced > Firewall > Port Forwarding)</li>
+                    <li>Reserve static IP for your server (DHCP reservation)</li>
+                    <li>Add port forwarding rule:
+                        <ul>
+                            <li>External Port: 443</li>
+                            <li>Internal Port: 443</li>
+                            <li>Protocol: TCP</li>
+                            <li>Internal IP: Your server's local IP</li>
+                        </ul>
+                    </li>
+                    <li>Save and apply settings</li>
+                </ol>
+
+                <h4>CGNAT Issues:</h4>
+                <p>If Spectrum uses CGNAT, port forwarding won't work. Solutions:</p>
+                <ul>
+                    <li>Call Spectrum and request to opt out of CGNAT</li>
+                    <li>Request a static IP (may cost extra)</li>
+                    <li>Use a VPN service that supports port forwarding</li>
+                    <li>Use a cloud VPS instead</li>
+                </ul>
+
+                <h4>Dynamic DNS Setup:</h4>
+                <p>Use services like:</p>
+                <ul>
+                    <li>No-IP (free)</li>
+                    <li>DuckDNS (free)</li>
+                    <li>Dynu (free)</li>
+                </ul>
+
+                <p>Install DDNS client on your server to update IP automatically.</p>
+            </section>
+
+            <!-- Security Hardening -->
+            <section id="security">
+                <h2>Security Hardening</h2>
+
+                <h3>Defending Against Active Probing</h3>
+
+                <div class="alert alert-danger">
+                    <strong>Critical:</strong> The GFW sends active probes to suspected proxy servers within half a second of detection. Improperly configured servers will be blocked.
+                </div>
+
+                <h4>Whitelist Firewall Approach</h4>
+                <p>The most effective defense: only accept connections from authorized users.</p>
+
+                <div class="command-box">
+                    <pre><code># Allow only specific IP addresses (your friend in China)
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow from FRIEND_IP_IN_CHINA to any port 443
+
+# Or allow IP ranges if they use mobile networks
+sudo ufw allow from 123.45.0.0/16 to any port 443</code></pre>
+                </div>
+
+                <h4>Install fail2ban</h4>
+                <p>Automatically ban IPs that show suspicious behavior:</p>
+
+                <div class="command-box">
+                    <pre><code># Install fail2ban
+sudo apt install fail2ban -y
+
+# Create local configuration
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+# Edit configuration
+sudo nano /etc/fail2ban/jail.local
+
+# Set:
+bantime = 3600
+findtime = 600
+maxretry = 3
+
+# Enable and start
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# Check status
+sudo fail2ban-client status</code></pre>
+                </div>
+
+                <h4>SSH Hardening</h4>
+
+                <div class="command-box">
+                    <pre><code># Edit SSH config
+sudo nano /etc/ssh/sshd_config
+
+# Recommended settings:
+Port 2222                      # Use non-standard port
+PermitRootLogin no            # Disable root login
+PasswordAuthentication no     # Require key-based auth
+PubkeyAuthentication yes
+MaxAuthTries 3
+LoginGraceTime 30
+AllowUsers yourusername       # Only allow specific users
+
+# Reload SSH
+sudo systemctl reload sshd</code></pre>
+                </div>
+
+                <h4>Enable Automatic Security Updates</h4>
+
+                <div class="command-box">
+                    <pre><code># Install unattended-upgrades
+sudo apt install unattended-upgrades -y
+
+# Enable automatic updates
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+
+# Configure
+sudo nano /etc/apt/apt.conf.d/50unattended-upgrades
+
+# Enable security updates
+Unattended-Upgrade::Allowed-Origins {
+    "${distro_id}:${distro_codename}-security";
+};</code></pre>
+                </div>
+
+                <h3>Traffic Obfuscation Best Practices</h3>
+
+                <h4>1. TLS Configuration</h4>
+                <ul>
+                    <li>Use TLS 1.3 (latest)</li>
+                    <li>Implement uTLS for client fingerprint randomization</li>
+                    <li>Use strong cipher suites</li>
+                    <li>Enable ALPN (Application-Layer Protocol Negotiation)</li>
+                </ul>
+
+                <h4>2. Timing and Pattern Obfuscation</h4>
+                <ul>
+                    <li>Add random padding to packets</li>
+                    <li>Randomize packet timing</li>
+                    <li>Avoid predictable packet sizes</li>
+                    <li>Use connection pooling/multiplexing</li>
+                </ul>
+
+                <h4>3. Server Response Behavior</h4>
+                <ul>
+                    <li>Respond to probes like a normal web server</li>
+                    <li>Use real website as fallback for Trojan</li>
+                    <li>Don't reveal specific timeout values</li>
+                    <li>Read forever on errors (don't terminate immediately)</li>
+                </ul>
+
+                <h3>Monitoring and Logging</h3>
+
+                <h4>Basic Monitoring Setup:</h4>
+
+                <div class="command-box">
+                    <pre><code># Monitor Xray/Trojan logs
+sudo journalctl -u xray -f
+sudo journalctl -u trojan -f
+
+# Monitor system resources
+htop
+
+# Monitor network connections
+sudo netstat -tulpn | grep 443
+sudo ss -tunlp | grep 443
+
+# Monitor firewall logs
+sudo tail -f /var/log/ufw.log</code></pre>
+                </div>
+
+                <h4>Log Rotation:</h4>
+
+                <div class="command-box">
+                    <pre><code># Create logrotate config
+sudo nano /etc/logrotate.d/xray
+
+# Add:
+/var/log/xray/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0644 nobody nogroup
+    postrotate
+        systemctl reload xray
+    endscript
+}</code></pre>
+                </div>
+
+                <h3>IPv6 Considerations</h3>
+
+                <div class="alert alert-success">
+                    <strong>Opportunity:</strong> IPv6 has less restrictive filtering than IPv4. If your friend has access to IPv6 (especially on CERNET), enable it on your server.
+                </div>
+
+                <div class="command-box">
+                    <pre><code># Enable IPv6 on server
+sudo nano /etc/sysctl.conf
+
+# Ensure these are set:
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+
+# Apply
+sudo sysctl -p
+
+# Allow IPv6 in firewall
+sudo ufw allow from ::/0 to any port 443 proto tcp</code></pre>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> Many VPN tools are IPv4-only. Ensure IPv6 traffic also goes through the tunnel or disable IPv6 on client to prevent leaks.
+                </div>
+            </section>
+
+            <!-- Optimization -->
+            <section id="optimization">
+                <h2>Performance Optimization</h2>
+
+                <h3>BBR Congestion Control</h3>
+
+                <p>BBR (Bottleneck Bandwidth and RTT) is critical for high-latency connections like China-USA. It can achieve 2700x better throughput than CUBIC in lossy networks.</p>
+
+                <div class="alert alert-success">
+                    <strong>Impact:</strong> BBR dramatically improves performance on connections with packet loss and high latency - exactly what you'll experience with China connections.
+                </div>
+
+                <div class="command-box">
+                    <pre><code># Check current congestion control
+sysctl net.ipv4.tcp_congestion_control
+
+# Enable BBR (requires kernel 4.9+)
+echo "net.core.default_qdisc=fq" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# Verify BBR is active
+sysctl net.ipv4.tcp_congestion_control
+lsmod | grep bbr</code></pre>
+                </div>
+
+                <h3>Kernel Network Tuning</h3>
+
+                <div class="command-box">
+                    <pre><code># Add to /etc/sysctl.conf
+sudo nano /etc/sysctl.conf
+
+# Add these optimizations:
+# Increase buffer sizes
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
+
+# Enable TCP Fast Open
+net.ipv4.tcp_fastopen = 3
+
+# Increase connection backlog
+net.core.somaxconn = 1024
+net.core.netdev_max_backlog = 5000
+
+# Enable TCP timestamps
+net.ipv4.tcp_timestamps = 1
+
+# Enable selective acknowledgments
+net.ipv4.tcp_sack = 1
+
+# Apply changes
+sudo sysctl -p</code></pre>
+                </div>
+
+                <h3>VPS Selection for Best Performance</h3>
+
+                <h4>Recommended VPS Locations:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>Latency to China</th>
+                            <th>Pros</th>
+                            <th>Cons</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hong Kong</td>
+                            <td>~30ms</td>
+                            <td>Lowest latency, great speed</td>
+                            <td>More expensive, sometimes blocked</td>
+                        </tr>
+                        <tr>
+                            <td>Singapore</td>
+                            <td>~70ms</td>
+                            <td>Good latency, reliable</td>
+                            <td>Moderate pricing</td>
+                        </tr>
+                        <tr>
+                            <td>Tokyo, Japan</td>
+                            <td>~80ms</td>
+                            <td>Good speed, stable</td>
+                            <td>Moderate pricing</td>
+                        </tr>
+                        <tr>
+                            <td>Los Angeles, USA</td>
+                            <td>~150ms</td>
+                            <td>Good China connectivity</td>
+                            <td>Higher latency</td>
+                        </tr>
+                        <tr>
+                            <td>US East Coast</td>
+                            <td>~200ms</td>
+                            <td>More bandwidth options</td>
+                            <td>High latency</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-info">
+                    <strong>For Spectrum Home Server:</strong> You're on the US East Coast, so latency will be ~200-250ms to China. This is acceptable for browsing but not ideal for gaming or real-time applications.
+                </div>
+
+                <h3>Multi-Server Redundancy</h3>
+
+                <p>The most reliable setup uses multiple servers with different protocols and locations:</p>
+
+                <h4>Recommended Architecture:</h4>
+                <ol>
+                    <li><strong>Primary:</strong> Xray REALITY on VPS in Asia (Hong Kong/Singapore)</li>
+                    <li><strong>Secondary:</strong> Trojan on VPS in USA West Coast</li>
+                    <li><strong>Tertiary:</strong> Shadowsocks on home server (Spectrum)</li>
+                    <li><strong>Emergency:</strong> Outline VPN on different provider</li>
+                </ol>
+
+                <h4>Cost Estimates:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Plan</th>
+                            <th>Price/Month</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Vultr</td>
+                            <td>1GB RAM, 1 CPU</td>
+                            <td>$5-6</td>
+                            <td>Cheapest option, good performance</td>
+                        </tr>
+                        <tr>
+                            <td>DigitalOcean</td>
+                            <td>1GB RAM, 1 CPU</td>
+                            <td>$6</td>
+                            <td>Excellent reliability, easy setup</td>
+                        </tr>
+                        <tr>
+                            <td>Linode</td>
+                            <td>1GB RAM, 1 CPU</td>
+                            <td>$5</td>
+                            <td>Great bandwidth, reliable</td>
+                        </tr>
+                        <tr>
+                            <td>Home Server</td>
+                            <td>Spectrum ISP</td>
+                            <td>$0 (electricity only)</td>
+                            <td>Backup option, may have CGNAT issues</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Total Monthly Cost for Redundant Setup:</strong> $10-15 for two VPS servers</p>
+
+                <h3>Client-Side Optimization</h3>
+
+                <h4>Connection Settings:</h4>
+                <ul>
+                    <li><strong>Mux (Multiplexing):</strong> Disable for China - can trigger detection</li>
+                    <li><strong>Connection Pool:</strong> Limit to 2-3 concurrent connections</li>
+                    <li><strong>Timeout:</strong> Increase to 30-60 seconds for high latency</li>
+                    <li><strong>DNS:</strong> Use VPN's DNS (prevent DNS leaks and censorship)</li>
+                </ul>
+
+                <h4>Router Configuration (for home users in China):</h4>
+                <ul>
+                    <li>Use cellular data instead of WiFi when possible (less monitored)</li>
+                    <li>OpenWRT/DD-WRT routers can run VPN clients</li>
+                    <li>Set up transparent proxy for all devices</li>
+                </ul>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="troubleshooting">
+                <h2>Troubleshooting Guide</h2>
+
+                <h3>Common Mistakes to Avoid</h3>
+
+                <div class="alert alert-danger">
+                    <strong>Critical Mistakes That Lead to Blocking:</strong>
+                </div>
+
+                <h4>1. Not Installing VPN Before Arrival</h4>
+                <p><strong>Problem:</strong> VPN apps and websites are blocked in China.</p>
+                <p><strong>Solution:</strong> Install ALL software, configure servers, and test thoroughly BEFORE traveling to China.</p>
+
+                <h4>2. Using Wrong Protocols</h4>
+                <p><strong>Problem:</strong> Plain WireGuard, OpenVPN without obfuscation detected instantly.</p>
+                <p><strong>Solution:</strong> Always use obfuscated protocols (REALITY, Trojan, Shadowsocks with plugins).</p>
+
+                <h4>3. Not Keeping Software Updated</h4>
+                <p><strong>Problem:</strong> GFW constantly evolves detection methods.</p>
+                <p><strong>Solution:</strong> Update server and client software monthly. Subscribe to project news.</p>
+
+                <h4>4. Using Datacenter IPs Carelessly</h4>
+                <p><strong>Problem:</strong> GFW targets DigitalOcean, Vultr, AWS IP ranges with probabilistic blocking.</p>
+                <p><strong>Solution:</strong> Use multiple servers in different datacenters and rotate when blocked.</p>
+
+                <h4>5. Not Having Backup Servers</h4>
+                <p><strong>Problem:</strong> Single point of failure when server gets blocked.</p>
+                <p><strong>Solution:</strong> Maintain 2-3 servers with different protocols and providers.</p>
+
+                <h4>6. Ignoring Political Events</h4>
+                <p><strong>Problem:</strong> VPN blocking intensifies during sensitive periods (National People's Congress, Tiananmen anniversary, protests).</p>
+                <p><strong>Solution:</strong> Expect connectivity issues during political events. Have multiple backup servers ready.</p>
+
+                <h4>7. DNS Configuration Errors</h4>
+                <p><strong>Problem:</strong> Client uses China DNS servers, revealing browsing activity.</p>
+                <p><strong>Solution:</strong> Force all DNS through VPN. Use DoH (DNS over HTTPS).</p>
+
+                <h4>8. Enabling Obfuscation Incorrectly</h4>
+                <p><strong>Problem:</strong> For NordVPN-style obfuscation, must use OpenVPN (TCP), not NordLynx/WireGuard.</p>
+                <p><strong>Solution:</strong> Read protocol requirements carefully. Test before relying on it.</p>
+
+                <h4>9. Antivirus Blocking VPN</h4>
+                <p><strong>Problem:</strong> Antivirus software blocks VPN as suspicious.</p>
+                <p><strong>Solution:</strong> Add VPN to antivirus exceptions or disable antivirus temporarily.</p>
+
+                <h4>10. Using WiFi Instead of Cellular</h4>
+                <p><strong>Problem:</strong> Hotel/public WiFi has more aggressive filtering.</p>
+                <p><strong>Solution:</strong> Use cellular data when VPN won't connect on WiFi.</p>
+
+                <h3>Connection Issues</h3>
+
+                <h4>Symptom: Cannot Connect at All</h4>
+                <p><strong>Possible Causes:</strong></p>
+                <ul>
+                    <li>Server IP blocked by GFW</li>
+                    <li>Firewall blocking connections</li>
+                    <li>CGNAT preventing port forwarding (home server)</li>
+                    <li>Service not running</li>
+                </ul>
+
+                <p><strong>Diagnostics:</strong></p>
+                <div class="command-box">
+                    <pre><code># Check if service is running
+sudo systemctl status xray
+sudo systemctl status trojan
+
+# Check if port is listening
+sudo netstat -tulpn | grep 443
+
+# Check firewall
+sudo ufw status
+
+# Test from different network
+# Use cellular data instead of WiFi
+
+# Check server from outside China
+ping YOUR_SERVER_IP
+telnet YOUR_SERVER_IP 443</code></pre>
+                </div>
+
+                <h4>Symptom: Connects But Very Slow</h4>
+                <p><strong>Possible Causes:</strong></p>
+                <ul>
+                    <li>GFW QoS throttling (quality of service degradation)</li>
+                    <li>Server overloaded</li>
+                    <li>Poor routing between China and server</li>
+                    <li>BBR not enabled</li>
+                </ul>
+
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Enable BBR congestion control</li>
+                    <li>Try different server location</li>
+                    <li>Switch to cellular data</li>
+                    <li>Change protocol (e.g., Trojan to REALITY)</li>
+                    <li>Use CDN (Cloudflare WebSocket)</li>
+                </ul>
+
+                <h4>Symptom: Works Then Suddenly Stops</h4>
+                <p><strong>Possible Causes:</strong></p>
+                <ul>
+                    <li>IP address has been identified and blocked</li>
+                    <li>Political event causing increased censorship</li>
+                    <li>Protocol detected by new GFW update</li>
+                </ul>
+
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Switch to backup server immediately</li>
+                    <li>Change server IP (deploy new VPS)</li>
+                    <li>Update to latest protocol version</li>
+                    <li>Wait 24-48 hours (some blocks are temporary)</li>
+                </ul>
+
+                <h4>Symptom: Works on Some Apps, Not Others</h4>
+                <p><strong>Possible Causes:</strong></p>
+                <ul>
+                    <li>App not configured to use proxy</li>
+                    <li>App bypassing system proxy settings</li>
+                    <li>DNS leak</li>
+                </ul>
+
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                    <li>Enable global proxy mode</li>
+                    <li>Configure app-specific proxy settings</li>
+                    <li>Use transparent proxy on router</li>
+                    <li>Check for DNS leaks: <code>https://dnsleaktest.com</code></li>
+                </ul>
+
+                <h3>Server Diagnostics</h3>
+
+                <div class="command-box">
+                    <pre><code># Check Xray status and logs
+sudo systemctl status xray
+sudo journalctl -u xray -n 50 --no-pager
+
+# Check Trojan status and logs
+sudo systemctl status trojan
+sudo journalctl -u trojan -n 50 --no-pager
+
+# Check active connections
+sudo ss -tunlp | grep 443
+
+# Check system resources
+free -h
+df -h
+top
+
+# Check network connectivity
+ping 8.8.8.8
+curl -I https://www.google.com
+
+# Test from client perspective (from another server)
+curl -v https://YOUR_SERVER_IP:443
+
+# Check certificate expiration (for Trojan)
+echo | openssl s_client -connect YOUR_DOMAIN:443 2>/dev/null | openssl x509 -noout -dates</code></pre>
+                </div>
+
+                <h3>Getting Help</h3>
+
+                <h4>Community Resources:</h4>
+                <ul>
+                    <li><strong>Xray/V2Ray:</strong> <a href="https://github.com/XTLS/Xray-core/discussions" class="reference-link">GitHub Discussions</a></li>
+                    <li><strong>Trojan:</strong> <a href="https://github.com/trojan-gfw/trojan/issues" class="reference-link">GitHub Issues</a></li>
+                    <li><strong>Shadowsocks:</strong> <a href="https://github.com/shadowsocks" class="reference-link">GitHub Organization</a></li>
+                    <li><strong>GFW Report:</strong> <a href="https://gfw.report" class="reference-link">Latest GFW Research</a></li>
+                    <li><strong>Reddit:</strong> r/dumbclub, r/China (search for VPN discussions)</li>
+                </ul>
+
+                <h4>Testing Resources:</h4>
+                <ul>
+                    <li><strong>Speed Test:</strong> fast.com, speedtest.net</li>
+                    <li><strong>DNS Leak Test:</strong> dnsleaktest.com</li>
+                    <li><strong>IP Check:</strong> whatismyipaddress.com</li>
+                    <li><strong>Firewall Test:</strong> canyouseeme.org</li>
+                </ul>
+            </section>
+
+            <!-- Best Practices Summary -->
+            <section id="best-practices">
+                <h2>Best Practices Summary</h2>
+
+                <h3>Security Checklist</h3>
+
+                <div class="alert alert-success">
+                    <h4>Essential Security Measures:</h4>
+                    <ul>
+                        <li>✓ Use obfuscated protocols only (REALITY, Trojan, Shadowsocks+plugins)</li>
+                        <li>✓ Enable BBR congestion control</li>
+                        <li>✓ Configure firewall (UFW) to allow only necessary ports</li>
+                        <li>✓ Install fail2ban for automated blocking</li>
+                        <li>✓ Disable root SSH login</li>
+                        <li>✓ Use SSH keys instead of passwords</li>
+                        <li>✓ Enable automatic security updates</li>
+                        <li>✓ Implement whitelist firewall for known IPs</li>
+                        <li>✓ Configure proper TLS (1.3) with strong ciphers</li>
+                        <li>✓ Use uTLS to prevent client fingerprinting</li>
+                        <li>✓ Monitor logs regularly</li>
+                        <li>✓ Keep all software updated</li>
+                    </ul>
+                </div>
+
+                <h3>Reliability Checklist</h3>
+
+                <div class="alert alert-info">
+                    <h4>Ensuring Continuous Access:</h4>
+                    <ul>
+                        <li>✓ Deploy 2-3 servers with different protocols</li>
+                        <li>✓ Use different VPS providers for redundancy</li>
+                        <li>✓ Have servers in different geographic locations</li>
+                        <li>✓ Test all servers monthly</li>
+                        <li>✓ Install and configure clients BEFORE going to China</li>
+                        <li>✓ Download client apps on all devices beforehand</li>
+                        <li>✓ Share server info via encrypted channels (Signal, WhatsApp)</li>
+                        <li>✓ Have backup communication method (phone call codes)</li>
+                        <li>✓ Document configuration for quick redeployment</li>
+                        <li>✓ Subscribe to GFW news and protocol updates</li>
+                    </ul>
+                </div>
+
+                <h3>Performance Checklist</h3>
+
+                <div class="alert alert-warning">
+                    <h4>Optimizing Speed and Latency:</h4>
+                    <ul>
+                        <li>✓ Enable BBR congestion control</li>
+                        <li>✓ Tune kernel network parameters</li>
+                        <li>✓ Choose server location close to China (Hong Kong, Singapore, Tokyo)</li>
+                        <li>✓ Use SSD storage on VPS</li>
+                        <li>✓ Allocate sufficient bandwidth (at least 1TB/month)</li>
+                        <li>✓ Disable multiplexing (Mux) - can trigger detection</li>
+                        <li>✓ Increase client timeout settings for high latency</li>
+                        <li>✓ Use cellular data when WiFi is throttled</li>
+                        <li>✓ Consider CDN (Cloudflare) for additional acceleration</li>
+                    </ul>
+                </div>
+
+                <h3>Quick Reference: Recommended Setups</h3>
+
+                <h4>For Technical Users:</h4>
+                <p><strong>Best Setup:</strong></p>
+                <ol>
+                    <li>Xray with VLESS + REALITY + Vision (VPS in Hong Kong or Singapore)</li>
+                    <li>Trojan-GFW with Nginx (VPS in USA or Japan)</li>
+                    <li>Both using port 443 with proper firewall configuration</li>
+                </ol>
+
+                <h4>For Moderate Users:</h4>
+                <p><strong>Balanced Setup:</strong></p>
+                <ol>
+                    <li>Trojan-GFW with Caddy (VPS, easy SSL management)</li>
+                    <li>Shadowsocks with v2ray-plugin (backup VPS)</li>
+                    <li>Use 1-click installation scripts where available</li>
+                </ol>
+
+                <h4>For Beginners:</h4>
+                <p><strong>Easiest Setup:</strong></p>
+                <ol>
+                    <li>Outline VPN (DigitalOcean droplet)</li>
+                    <li>15-minute setup with graphical interface</li>
+                    <li>Deploy second Outline server as backup</li>
+                </ol>
+
+                <h4>For Home Server (Spectrum):</h4>
+                <p><strong>Home Setup:</strong></p>
+                <ol>
+                    <li>Check for CGNAT - contact Spectrum to opt out</li>
+                    <li>Set up Dynamic DNS (No-IP or DuckDNS)</li>
+                    <li>Configure port forwarding for 443</li>
+                    <li>Install Trojan or Xray on home server</li>
+                    <li>Use this as backup to cloud VPS (not primary)</li>
+                </ol>
+            </section>
+
+            <!-- References -->
+            <section id="references">
+                <h2>References & Further Reading</h2>
+
+                <h3>Research Papers & Reports</h3>
+                <ol>
+                    <li>
+                        <strong>How the Great Firewall of China Detects and Blocks Fully Encrypted Traffic (2023)</strong><br>
+                        <a href="https://gfw.report/publications/usenixsecurity23/en/" class="reference-link">https://gfw.report/publications/usenixsecurity23/en/</a>
+                    </li>
+                    <li>
+                        <strong>Exposing and Circumventing SNI-based QUIC Censorship of the Great Firewall (2025)</strong><br>
+                        <a href="https://gfw.report/publications/usenixsecurity25/en/" class="reference-link">https://gfw.report/publications/usenixsecurity25/en/</a>
+                    </li>
+                    <li>
+                        <strong>A Wall Behind A Wall: Emerging Regional Censorship in China (2025)</strong><br>
+                        <a href="https://gfw.report/publications/sp25/en/" class="reference-link">https://gfw.report/publications/sp25/en/</a>
+                    </li>
+                    <li>
+                        <strong>How China Detects and Blocks Shadowsocks (2020)</strong><br>
+                        <a href="https://gfw.report/publications/imc20/en/" class="reference-link">https://gfw.report/publications/imc20/en/</a>
+                    </li>
+                    <li>
+                        <strong>Advancing Obfuscation Strategies to Counter China's Great Firewall (2025)</strong><br>
+                        <a href="https://arxiv.org/html/2503.02018v1" class="reference-link">https://arxiv.org/html/2503.02018v1</a>
+                    </li>
+                    <li>
+                        <strong>A Practical Guide to Defend Against GFW's Active Probing</strong><br>
+                        <a href="https://gfw.report/blog/ss_advise/en/" class="reference-link">https://gfw.report/blog/ss_advise/en/</a>
+                    </li>
+                </ol>
+
+                <h3>Official Documentation</h3>
+                <ol>
+                    <li>
+                        <strong>Xray-core Official Documentation</strong><br>
+                        <a href="https://xtls.github.io/" class="reference-link">https://xtls.github.io/</a>
+                    </li>
+                    <li>
+                        <strong>Trojan-GFW Official Documentation</strong><br>
+                        <a href="https://trojan-gfw.github.io/trojan/" class="reference-link">https://trojan-gfw.github.io/trojan/</a>
+                    </li>
+                    <li>
+                        <strong>Shadowsocks Official Documentation</strong><br>
+                        <a href="https://shadowsocks.org/" class="reference-link">https://shadowsocks.org/</a>
+                    </li>
+                    <li>
+                        <strong>Outline VPN (Jigsaw)</strong><br>
+                        <a href="https://getoutline.org/" class="reference-link">https://getoutline.org/</a>
+                    </li>
+                    <li>
+                        <strong>NaiveProxy GitHub</strong><br>
+                        <a href="https://github.com/klzgrad/naiveproxy" class="reference-link">https://github.com/klzgrad/naiveproxy</a>
+                    </li>
+                </ol>
+
+                <h3>Tutorials & Guides</h3>
+                <ol>
+                    <li>
+                        <strong>Xray REALITY Setup Tutorial</strong><br>
+                        <a href="https://cscot.pages.dev/2023/03/02/Xray-REALITY-tutorial/" class="reference-link">https://cscot.pages.dev/2023/03/02/Xray-REALITY-tutorial/</a>
+                    </li>
+                    <li>
+                        <strong>V2Ray/Xray with Reality Protocol Guide</strong><br>
+                        <a href="https://gist.github.com/justiceformahsa/f440307c83ffe1679074dbf691ca7e54" class="reference-link">GitHub Gist by justiceformahsa</a>
+                    </li>
+                    <li>
+                        <strong>Shadowsocks Setup on Ubuntu/Debian</strong><br>
+                        <a href="https://www.linuxbabe.com/linux-server/setup-your-own-shadowsocks-server-on-debian-ubuntu-centos" class="reference-link">LinuxBabe Tutorial</a>
+                    </li>
+                    <li>
+                        <strong>How to Set Up Outline VPN</strong><br>
+                        <a href="https://www.howtogeek.com/799482/how-to-set-up-shadowsocks-with-outline/" class="reference-link">How-To Geek Guide</a>
+                    </li>
+                </ol>
+
+                <h3>Community & Support</h3>
+                <ol>
+                    <li>
+                        <strong>Xray-core GitHub Discussions</strong><br>
+                        <a href="https://github.com/XTLS/Xray-core/discussions" class="reference-link">https://github.com/XTLS/Xray-core/discussions</a>
+                    </li>
+                    <li>
+                        <strong>Trojan-GFW GitHub Issues</strong><br>
+                        <a href="https://github.com/trojan-gfw/trojan/issues" class="reference-link">https://github.com/trojan-gfw/trojan/issues</a>
+                    </li>
+                    <li>
+                        <strong>GFW Report - Latest Research</strong><br>
+                        <a href="https://gfw.report/" class="reference-link">https://gfw.report/</a>
+                    </li>
+                    <li>
+                        <strong>net4people BBS - Censorship Circumvention</strong><br>
+                        <a href="https://github.com/net4people/bbs" class="reference-link">https://github.com/net4people/bbs</a>
+                    </li>
+                </ol>
+
+                <h3>VPS Providers</h3>
+                <ol>
+                    <li>
+                        <strong>DigitalOcean</strong><br>
+                        <a href="https://www.digitalocean.com/" class="reference-link">https://www.digitalocean.com/</a> - $6/month, beginner-friendly
+                    </li>
+                    <li>
+                        <strong>Vultr</strong><br>
+                        <a href="https://www.vultr.com/" class="reference-link">https://www.vultr.com/</a> - $5/month, cheapest option
+                    </li>
+                    <li>
+                        <strong>Linode (Akamai)</strong><br>
+                        <a href="https://www.linode.com/" class="reference-link">https://www.linode.com/</a> - $5/month, generous bandwidth
+                    </li>
+                    <li>
+                        <strong>AWS Lightsail</strong><br>
+                        <a href="https://aws.amazon.com/lightsail/" class="reference-link">https://aws.amazon.com/lightsail/</a> - $3.50/month starting price
+                    </li>
+                </ol>
+
+                <h3>Tools & Utilities</h3>
+                <ol>
+                    <li><strong>v2rayN (Windows):</strong> <a href="https://github.com/2dust/v2rayN" class="reference-link">GitHub</a></li>
+                    <li><strong>v2rayNG (Android):</strong> <a href="https://github.com/2dust/v2rayNG" class="reference-link">GitHub</a></li>
+                    <li><strong>Shadowrocket (iOS):</strong> App Store (paid, ~$3)</li>
+                    <li><strong>Clash for Windows:</strong> <a href="https://github.com/Fndroid/clash_for_windows_pkg" class="reference-link">GitHub</a></li>
+                    <li><strong>DNS Leak Test:</strong> <a href="https://dnsleaktest.com/" class="reference-link">https://dnsleaktest.com/</a></li>
+                    <li><strong>Speed Test:</strong> <a href="https://fast.com/" class="reference-link">https://fast.com/</a></li>
+                </ol>
+            </section>
+
+            <!-- Disclaimer -->
+            <section id="disclaimer">
+                <h2>Disclaimer & Legal Notice</h2>
+
+                <div class="alert alert-warning">
+                    <p><strong>Educational Purpose:</strong> This guide is provided for educational and informational purposes only. It is intended to help individuals access unrestricted internet for legitimate purposes such as accessing educational resources, communicating with family and friends, and accessing information.</p>
+
+                    <p><strong>Legal Compliance:</strong> Users are responsible for understanding and complying with all applicable laws and regulations in their jurisdiction. The use of VPNs and circumvention tools may be restricted or prohibited in some countries.</p>
+
+                    <p><strong>Privacy and Security:</strong> While this guide provides recommendations for security and privacy, no system is 100% secure. Users should understand the risks involved and take appropriate precautions.</p>
+
+                    <p><strong>No Guarantees:</strong> The effectiveness of these methods can change at any time as censorship systems evolve. There is no guarantee that any particular method will work indefinitely.</p>
+
+                    <p><strong>Use at Your Own Risk:</strong> The authors and contributors of this guide are not responsible for any consequences resulting from the use of this information.</p>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p><strong>Document Information</strong></p>
+            <p>Created: November 2025 | Last Updated: November 2025</p>
+            <p>Based on extensive research of 100+ sources including academic papers, technical documentation, and community reports</p>
+            <p>This is a living document. GFW detection methods evolve constantly. Always verify current information with latest community reports.</p>
+            <hr style="margin: 20px 0; border-color: #555;">
+            <p>For the latest information on GFW circumvention, visit <a href="https://gfw.report" class="reference-link">GFW Report</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Add smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Add copy functionality to code blocks (placeholder)
+        document.querySelectorAll('.command-box').forEach(box => {
+            const button = document.createElement('button');
+            button.className = 'copy-button';
+            button.textContent = 'Copy';
+            button.onclick = function() {
+                const code = box.querySelector('code').textContent;
+                navigator.clipboard.writeText(code).then(() => {
+                    button.textContent = 'Copied!';
+                    setTimeout(() => button.textContent = 'Copy', 2000);
+                });
+            };
+            box.appendChild(button);
+        });
+    </script>
+</body>
+</html>
