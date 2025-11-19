@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xray REALITY Setup Guide - Port 443 with Existing Web Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #e74c3c;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #e74c3c;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        h4 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .toc {
+            background: #ecf0f1;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .toc ul {
+            list-style-position: inside;
+            margin-left: 20px;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 5px solid;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .option-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .option-card h4 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .pros {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+        }
+
+        .cons {
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+        }
+
+        .pros h5, .cons h5 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #e74c3c;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 40px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .command {
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 10px 0;
+            border-left: 3px solid #6c757d;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .note-box {
+            background: #fff9e6;
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .note-box::before {
+            content: "💡 ";
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Xray REALITY Setup Guide</h1>
+        <p style="font-size: 1.1em; color: #666; margin-bottom: 20px;">
+            <strong>Complete Guide for Port 443 with Existing Web Server</strong><br>
+            Research Date: November 2024 | Based on Official Xray Documentation & Community Examples
+        </p>
+
+        <div class="alert alert-success">
+            <strong>✓ Good News!</strong> You can absolutely run Xray REALITY on port 443 alongside your existing web server. There are multiple proven methods to accomplish this.
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ol>
+                <li><a href="#overview">Overview: Your Options</a></li>
+                <li><a href="#option1">Option 1: Nginx SNI Routing (Recommended)</a></li>
+                <li><a href="#option2">Option 2: Use Alternative Port</a></li>
+                <li><a href="#option3">Option 3: "Steal Yourself" Configuration</a></li>
+                <li><a href="#prerequisites">Prerequisites & Preparation</a></li>
+                <li><a href="#detailed-setup">Detailed Setup: Nginx SNI Method</a></li>
+                <li><a href="#xray-config">Xray REALITY Configuration</a></li>
+                <li><a href="#client-setup">Client Configuration</a></li>
+                <li><a href="#testing">Testing & Verification</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#optimization">Performance Optimization</a></li>
+            </ol>
+        </div>
+
+        <h2 id="overview">1. Overview: Your Options</h2>
+
+        <p>Since you already have a web server using port 443, you have three main approaches:</p>
+
+        <div class="option-card">
+            <h4><span class="step-number">1</span> Nginx SNI Routing (Port Multiplexing) - RECOMMENDED</h4>
+            <p><strong>How it works:</strong> Nginx sits in front and inspects the TLS Server Name Indication (SNI) field without decrypting traffic, then routes connections to either your web server or Xray based on the domain name.</p>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h5>✓ Pros</h5>
+                    <ul>
+                        <li>Uses standard port 443</li>
+                        <li>Bypasses most port restrictions</li>
+                        <li>Both services work simultaneously</li>
+                        <li>Most GFW-resistant (443 is HTTPS)</li>
+                        <li>Professional setup</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h5>✗ Cons</h5>
+                    <ul>
+                        <li>Requires Nginx reconfiguration</li>
+                        <li>More complex initial setup</li>
+                        <li>Need specific Nginx modules</li>
+                        <li>Requires understanding SNI routing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="option-card">
+            <h4><span class="step-number">2</span> Use Alternative Port (e.g., 8443, 2053)</h4>
+            <p><strong>How it works:</strong> Run Xray REALITY on a different port while your web server keeps port 443.</p>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h5>✓ Pros</h5>
+                    <ul>
+                        <li>Simple setup</li>
+                        <li>No web server changes needed</li>
+                        <li>Easy to understand</li>
+                        <li>Quick to implement</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h5>✗ Cons</h5>
+                    <ul>
+                        <li>Some networks block non-standard ports</li>
+                        <li>Slightly less stealthy</li>
+                        <li>May not work in restrictive environments</li>
+                        <li>Easier to detect (non-443 TLS)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="option-card">
+            <h4><span class="step-number">3</span> "Steal Yourself" Configuration</h4>
+            <p><strong>How it works:</strong> Xray REALITY uses your own domain and TLS certificate, forwarding unmatched traffic to your web server on localhost.</p>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h5>✓ Pros</h5>
+                    <ul>
+                        <li>Very stealthy</li>
+                        <li>Uses your real domain/certificate</li>
+                        <li>May provide more stable connection</li>
+                        <li>Single port solution</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h5>✗ Cons</h5>
+                    <ul>
+                        <li>Requires domain ownership</li>
+                        <li>More complex configuration</li>
+                        <li>Xray handles port 443 directly</li>
+                        <li>Need to move web server to localhost port</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>Our Recommendation:</strong> Use <strong>Option 1 (Nginx SNI Routing)</strong> for the best balance of stealth, functionality, and GFW resistance. This guide will focus primarily on this method, with instructions for Option 2 as well.
+        </div>
+
+        <h2 id="option1">2. Option 1: Nginx SNI Routing (Recommended)</h2>
+
+        <h3>How SNI Routing Works</h3>
+
+        <p>Server Name Indication (SNI) is an extension to TLS that allows a client to specify which hostname it's trying to reach during the TLS handshake. Nginx can inspect this field <strong>before</strong> decrypting the connection and route traffic accordingly:</p>
+
+        <pre><code>Client → Port 443 → Nginx (reads SNI) → Routes based on domain name
+                              ↓
+                    If SNI = proxy.example.com → Xray REALITY
+                    If SNI = www.example.com → Your Web Server
+                    If SNI = anything else → Xray REALITY (stealth)</code></pre>
+
+        <h3>Architecture Diagram</h3>
+
+        <pre><code>
+┌─────────────────────────────────────────────────────────┐
+│                     Port 443                            │
+│                   (Public Interface)                    │
+└────────────────────┬────────────────────────────────────┘
+                     │
+              ┌──────▼──────┐
+              │   Nginx     │
+              │   Stream    │ (Inspects SNI with ssl_preread)
+              │   Module    │
+              └──────┬──────┘
+                     │
+         ┌───────────┴───────────┐
+         │                       │
+    ┌────▼─────┐          ┌─────▼──────┐
+    │  Xray    │          │    Your    │
+    │ REALITY  │          │    Web     │
+    │127.0.0.1 │          │   Server   │
+    │  :8443   │          │127.0.0.1   │
+    └──────────┘          │   :8080    │
+                          └────────────┘
+        </code></pre>
+
+        <h3>Key Technical Points</h3>
+
+        <ul>
+            <li><strong>ssl_preread:</strong> Nginx examines TLS ClientHello without decrypting</li>
+            <li><strong>No SSL termination:</strong> Traffic passes through as encrypted streams</li>
+            <li><strong>Zero latency overhead:</strong> Simple TCP forwarding based on SNI</li>
+            <li><strong>Transparent routing:</strong> Each backend service handles its own TLS</li>
+        </ul>
+
+        <div class="note-box">
+            <strong>Important:</strong> Once Nginx's stream module listens on port 443, your web server must move to a different port (like 8080) and accept connections from Nginx via reverse proxy. Don't worry - we'll configure this properly!
+        </div>
+
+        <h2 id="option2">3. Option 2: Use Alternative Port</h2>
+
+        <p>If you want a simpler setup and don't mind using a non-standard port:</p>
+
+        <div class="option-card">
+            <h4>Quick Setup Steps</h4>
+            <ol>
+                <li>Keep your web server on port 443 (no changes needed)</li>
+                <li>Configure Xray REALITY to listen on an alternative port</li>
+                <li>Open the alternative port in your firewall</li>
+                <li>Configure your router to forward the port</li>
+            </ol>
+        </div>
+
+        <h3>Recommended Alternative Ports</h3>
+
+        <table>
+            <tr>
+                <th>Port</th>
+                <th>Description</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td>8443</td>
+                <td>Common alternative HTTPS</td>
+                <td>Widely used, generally not blocked</td>
+            </tr>
+            <tr>
+                <td>2053</td>
+                <td>Cloudflare-friendly</td>
+                <td>Less likely to be blocked in some regions</td>
+            </tr>
+            <tr>
+                <td>2096</td>
+                <td>Cloudflare-friendly</td>
+                <td>Good alternative</td>
+            </tr>
+            <tr>
+                <td>2087</td>
+                <td>Cloudflare-friendly</td>
+                <td>Another option</td>
+            </tr>
+        </table>
+
+        <div class="alert alert-warning">
+            <strong>Consideration:</strong> Port 443 is NOT required for Xray REALITY to function. However, some restrictive networks (hotels, corporate firewalls, strict ISPs in China) may block non-standard ports. Port 443 offers the best compatibility.
+        </div>
+
+        <h2 id="option3">4. Option 3: "Steal Yourself" Configuration</h2>
+
+        <p>This advanced configuration allows REALITY to use your own domain's TLS certificate:</p>
+
+        <h3>Requirements</h3>
+        <ul>
+            <li>Own a domain name (e.g., example.com)</li>
+            <li>Subdomain pointing to your server (e.g., proxy.example.com)</li>
+            <li>Valid TLS certificate for your domain</li>
+            <li>Web server (Nginx/Caddy) listening on localhost port</li>
+        </ul>
+
+        <h3>How It Works</h3>
+        <pre><code>1. Xray listens on port 443
+2. REALITY uses your domain (proxy.example.com) as the "dest"
+3. Authenticated clients connect to Xray proxy
+4. Non-authenticated traffic gets forwarded to your web server on localhost:4123
+5. To outsiders, it looks exactly like a normal HTTPS website</code></pre>
+
+        <div class="alert alert-info">
+            <strong>When to use this:</strong> Best for advanced users who want maximum stealth and already have domain management experience. We'll provide configuration examples later in this guide.
+        </div>
+
+        <h2 id="prerequisites">5. Prerequisites & Preparation</h2>
+
+        <h3>5.1 Check Your Current Setup</h3>
+
+        <p><strong>Step 1: Identify what's using port 443</strong></p>
+        <pre><code># Check what's listening on port 443
+sudo netstat -tulpn | grep :443
+# or
+sudo ss -tulpn | grep :443
+
+# Example output:
+# tcp  0  0 0.0.0.0:443  0.0.0.0:*  LISTEN  1234/nginx</code></pre>
+
+        <p><strong>Step 2: Check your Nginx version and modules</strong></p>
+        <pre><code># Check Nginx version and compilation parameters
+nginx -V
+
+# Look for these modules in the output:
+# --with-stream
+# --with-stream_ssl_module
+# --with-stream_ssl_preread_module</code></pre>
+
+        <div class="alert alert-warning">
+            <strong>If these modules are missing:</strong> You'll need to install nginx-full or nginx-extras package, or compile Nginx from source. Instructions provided below.
+        </div>
+
+        <h3>5.2 Install/Upgrade Nginx with Required Modules</h3>
+
+        <h4>Ubuntu/Debian - Easy Way</h4>
+        <pre><code># Install nginx-full which includes stream modules
+sudo apt update
+sudo apt install nginx-full
+
+# Verify modules are present
+nginx -V 2>&1 | grep -o with-stream[^\ ]*</code></pre>
+
+        <h4>If nginx-full doesn't have the modules</h4>
+        <pre><code># Try nginx-extras (includes even more modules)
+sudo apt remove nginx nginx-common
+sudo apt install nginx-extras
+
+# Verify
+nginx -V 2>&1 | grep -o with-stream[^\ ]*</code></pre>
+
+        <h3>5.3 Install Xray-core</h3>
+
+        <pre><code># Official installation script
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+
+# Verify installation
+xray version
+
+# Expected output: Xray 1.8.x (Xray, Penetrates Everything.)</code></pre>
+
+        <h3>5.4 Generate REALITY Keys</h3>
+
+        <pre><code># Generate UUID for client authentication
+xray uuid
+# Save output: e.g., a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+# Generate REALITY key pair
+xray x25519
+# Save both outputs:
+# Private key: gK7xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# Public key: xN9xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code></pre>
+
+        <div class="note-box">
+            <strong>Save these values!</strong> You'll need:
+            <ul>
+                <li><strong>UUID:</strong> For client authentication</li>
+                <li><strong>Private Key:</strong> For server config</li>
+                <li><strong>Public Key:</strong> For client config</li>
+            </ul>
+        </div>
+
+        <h3>5.5 Choose Your Destination (dest) Website</h3>
+
+        <p>The "dest" parameter is crucial - it's the website that Xray REALITY mimics. When the GFW probes your server, it sees traffic that looks identical to accessing this legitimate website.</p>
+
+        <h4>Requirements for Destination Website</h4>
+        <ul>
+            <li>✓ Must support TLS 1.3</li>
+            <li>✓ Must support HTTP/2 (H2)</li>
+            <li>✓ Should be a foreign website (not from China)</li>
+            <li>✓ Should not redirect (avoid using apex domains that redirect to www)</li>
+            <li>✓ Should not be blocked by GFW</li>
+            <li>✓ Should not contain illegal content</li>
+            <li>✓ Preferably geographically close to your server (lower latency)</li>
+        </ul>
+
+        <h4>Recommended Destination Websites (2024)</h4>
+
+        <table>
+            <tr>
+                <th>Website</th>
+                <th>Benefits</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td>microsoft.com</td>
+                <td>Large, trusted, TLS 1.3</td>
+                <td>Excellent choice, widely used</td>
+            </tr>
+            <tr>
+                <td>www.lovelive-anime.jp</td>
+                <td>TLS 1.3, H2, OCSP Stapling</td>
+                <td>Mentioned in official docs</td>
+            </tr>
+            <tr>
+                <td>addons.mozilla.org</td>
+                <td>Mozilla infrastructure</td>
+                <td>Reliable, good performance</td>
+            </tr>
+            <tr>
+                <td>www.gov.uk</td>
+                <td>Government site, trusted</td>
+                <td>Good for European servers</td>
+            </tr>
+            <tr>
+                <td>dl.google.com</td>
+                <td>Google infrastructure</td>
+                <td>Has OCSP Stapling bonus</td>
+            </tr>
+            <tr>
+                <td>1.1.1.1:443</td>
+                <td>Cloudflare DNS</td>
+                <td>Special: leave serverNames empty</td>
+            </tr>
+        </table>
+
+        <h4>Test a Potential Destination</h4>
+        <pre><code># Test if a website supports TLS 1.3 and H2
+curl -I --tlsv1.3 --http2 https://microsoft.com
+
+# Look for:
+# HTTP/2 200 (indicates H2 support)
+# No redirect (same domain in response)
+
+# Alternative test with OpenSSL
+openssl s_client -connect microsoft.com:443 -tls1_3 < /dev/null
+
+# Look for: "Protocol  : TLSv1.3"</code></pre>
+
+        <div class="note-box">
+            <strong>Pro Tip:</strong> If you have your own website on the same server that meets the requirements, use that! It's the best option for the "steal yourself" configuration.
+        </div>
+
+        <h2 id="detailed-setup">6. Detailed Setup: Nginx SNI Method</h2>
+
+        <h3>Step 1: Backup Your Current Configuration</h3>
+
+        <pre><code># Backup current Nginx config
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
+sudo cp -r /etc/nginx/sites-enabled /etc/nginx/sites-enabled.backup
+
+# Backup web server files (if needed)
+sudo cp -r /var/www/html /var/www/html.backup</code></pre>
+
+        <h3>Step 2: Move Web Server to Port 8080</h3>
+
+        <p>Edit your existing Nginx site configuration:</p>
+
+        <pre><code># Find your site config (commonly in /etc/nginx/sites-available/)
+sudo nano /etc/nginx/sites-available/default
+# or
+sudo nano /etc/nginx/sites-available/yourdomain.com</code></pre>
+
+        <p>Change the server block:</p>
+
+        <pre><code># OLD CONFIGURATION (before):
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com;
+
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    # ... rest of config
+}
+
+# NEW CONFIGURATION (after):
+server {
+    listen 8080;  # Changed from 443 to 8080
+    server_name yourdomain.com;
+
+    # Remove SSL directives - no longer needed here
+    # SSL will be handled by Nginx stream module
+
+    # Add real IP handling (important!)
+    set_real_ip_from 127.0.0.1;
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+
+    # ... rest of config stays the same
+}</code></pre>
+
+        <div class="alert alert-warning">
+            <strong>Important:</strong> Remove the SSL listen directive (443) and SSL certificate directives. The web server will receive plain HTTP from Nginx stream module (which already decrypted it).
+        </div>
+
+        <h3>Step 3: Configure Nginx Stream Module for SNI Routing</h3>
+
+        <p>Create a new stream configuration file:</p>
+
+        <pre><code>sudo nano /etc/nginx/stream.conf</code></pre>
+
+        <p>Add the following configuration:</p>
+
+        <pre><code># /etc/nginx/stream.conf
+# SNI-based routing for Xray REALITY and Web Server
+
+# Define upstream servers
+upstream xray_reality {
+    server 127.0.0.1:8443;  # Xray REALITY listens here
+}
+
+upstream web_server {
+    server 127.0.0.1:8080;  # Your web server listens here
+}
+
+# Map SNI to backend
+map $ssl_preread_server_name $backend_name {
+    yourdomain.com          web_server;    # Your actual domain → web server
+    www.yourdomain.com      web_server;    # www version → web server
+    default                 xray_reality;  # Everything else → Xray
+}
+
+# Main server block
+server {
+    listen 443 reuseport;
+    listen [::]:443 reuseport;
+
+    proxy_pass $backend_name;
+    ssl_preread on;
+    proxy_protocol on;  # Optional: preserves client IP
+}</code></pre>
+
+        <div class="note-box">
+            <strong>Configuration Explanation:</strong>
+            <ul>
+                <li><strong>upstream blocks:</strong> Define backend servers (Xray and web server)</li>
+                <li><strong>map directive:</strong> Routes based on SNI ($ssl_preread_server_name)</li>
+                <li><strong>ssl_preread on:</strong> Enables SNI inspection without decryption</li>
+                <li><strong>proxy_protocol:</strong> Passes client IP to backends (optional but recommended)</li>
+                <li><strong>default:</strong> Unknown domains go to Xray (stealth mode!)</li>
+            </ul>
+        </div>
+
+        <h3>Step 4: Include Stream Config in Main Nginx Config</h3>
+
+        <pre><code>sudo nano /etc/nginx/nginx.conf</code></pre>
+
+        <p>Add the stream block at the TOP LEVEL (outside and after the http block):</p>
+
+        <pre><code># /etc/nginx/nginx.conf
+
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+# HTTP block (your existing config)
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # ... your existing http config ...
+
+    include /etc/nginx/sites-enabled/*;
+}
+
+# ADD THIS STREAM BLOCK (at the same level as http, not inside it!)
+stream {
+    include /etc/nginx/stream.conf;
+}</code></pre>
+
+        <div class="alert alert-danger">
+            <strong>Critical:</strong> The <code>stream</code> block must be at the same level as the <code>http</code> block, NOT inside it! This is a common mistake.
+        </div>
+
+        <h3>Step 5: Test Nginx Configuration</h3>
+
+        <pre><code># Test configuration for syntax errors
+sudo nginx -t
+
+# Expected output:
+# nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+# nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+# If successful, reload Nginx
+sudo systemctl reload nginx
+
+# Check status
+sudo systemctl status nginx</code></pre>
+
+        <h2 id="xray-config">7. Xray REALITY Configuration</h2>
+
+        <h3>Server Configuration</h3>
+
+        <p>Create/edit Xray server config:</p>
+
+        <pre><code>sudo nano /usr/local/etc/xray/config.json</code></pre>
+
+        <p>Use this configuration (replace placeholder values):</p>
+
+        <pre><code>{
+  "log": {
+    "loglevel": "warning",
+    "access": "/var/log/xray/access.log",
+    "error": "/var/log/xray/error.log"
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 8443,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "YOUR_UUID_FROM_STEP_5.4",
+            "flow": "xtls-rprx-vision",
+            "email": "user@example.com"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "microsoft.com:443",
+          "xver": 0,
+          "serverNames": [
+            "microsoft.com",
+            "www.microsoft.com"
+          ],
+          "privateKey": "YOUR_PRIVATE_KEY_FROM_STEP_5.4",
+          "minClientVer": "",
+          "maxClientVer": "",
+          "maxTimeDiff": 0,
+          "shortIds": [
+            "",
+            "0123456789abcdef"
+          ]
+        },
+        "sockopt": {
+          "acceptProxyProtocol": true,
+          "tcpFastOpen": true,
+          "tcpKeepAliveInterval": 30
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
+  ],
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block"
+      }
+    ]
+  }
+}</code></pre>
+
+        <h3>Configuration Parameters Explained</h3>
+
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Description</th>
+                <th>Your Value</th>
+            </tr>
+            <tr>
+                <td>listen</td>
+                <td>Listen on localhost (Nginx forwards here)</td>
+                <td>127.0.0.1</td>
+            </tr>
+            <tr>
+                <td>port</td>
+                <td>Xray listening port (internal)</td>
+                <td>8443</td>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>Client UUID (authentication)</td>
+                <td>From xray uuid</td>
+            </tr>
+            <tr>
+                <td>flow</td>
+                <td>XTLS flow type (must be Vision)</td>
+                <td>xtls-rprx-vision</td>
+            </tr>
+            <tr>
+                <td>dest</td>
+                <td>Destination website to mimic</td>
+                <td>microsoft.com:443</td>
+            </tr>
+            <tr>
+                <td>serverNames</td>
+                <td>Valid SNI names for clients</td>
+                <td>["microsoft.com"]</td>
+            </tr>
+            <tr>
+                <td>privateKey</td>
+                <td>REALITY private key</td>
+                <td>From xray x25519</td>
+            </tr>
+            <tr>
+                <td>shortIds</td>
+                <td>Client identifiers (can distinguish users)</td>
+                <td>["", "0123456789abcdef"]</td>
+            </tr>
+            <tr>
+                <td>acceptProxyProtocol</td>
+                <td>Accept client IP from Nginx</td>
+                <td>true</td>
+            </tr>
+        </table>
+
+        <h3>Create Log Directory</h3>
+
+        <pre><code># Create log directory
+sudo mkdir -p /var/log/xray
+
+# Set permissions
+sudo chown nobody:nogroup /var/log/xray
+
+# Enable log rotation
+sudo nano /etc/logrotate.d/xray</code></pre>
+
+        <p>Add logrotate config:</p>
+
+        <pre><code>/var/log/xray/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0644 nobody nogroup
+    postrotate
+        systemctl reload xray > /dev/null 2>&1 || true
+    endscript
+}</code></pre>
+
+        <h3>Start Xray Service</h3>
+
+        <pre><code># Test configuration
+xray run -test -c /usr/local/etc/xray/config.json
+
+# If OK, start service
+sudo systemctl start xray
+sudo systemctl enable xray
+
+# Check status
+sudo systemctl status xray
+
+# View logs
+sudo journalctl -u xray -f</code></pre>
+
+        <h3>Configure Firewall</h3>
+
+        <pre><code># Port 443 should already be open for your web server
+# Verify it's allowed
+sudo ufw status
+
+# If not open:
+sudo ufw allow 443/tcp
+
+# Reload firewall
+sudo ufw reload</code></pre>
+
+        <h2 id="client-setup">8. Client Configuration</h2>
+
+        <h3>Connection Details You'll Need</h3>
+
+        <ul>
+            <li><strong>Server Address:</strong> Your public IP or domain (yourname.duckdns.org)</li>
+            <li><strong>Port:</strong> 443</li>
+            <li><strong>UUID:</strong> The UUID you generated</li>
+            <li><strong>Public Key:</strong> The public key from x25519</li>
+            <li><strong>Server Name:</strong> microsoft.com (or whatever you chose)</li>
+            <li><strong>Short ID:</strong> 0123456789abcdef (or blank "")</li>
+        </ul>
+
+        <h3>Client Configuration JSON</h3>
+
+        <pre><code>{
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "YOUR_SERVER_IP_OR_DOMAIN",
+            "port": 443,
+            "users": [
+              {
+                "id": "YOUR_UUID",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "fingerprint": "chrome",
+          "serverName": "microsoft.com",
+          "publicKey": "YOUR_PUBLIC_KEY",
+          "shortId": "0123456789abcdef",
+          "spiderX": ""
+        }
+      },
+      "tag": "proxy"
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    }
+  ]
+}</code></pre>
+
+        <h3>Connection URI Format</h3>
+
+        <p>For easy sharing and import:</p>
+
+        <pre><code>vless://UUID@SERVER_IP:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=microsoft.com&fp=chrome&pbk=PUBLIC_KEY&sid=0123456789abcdef&type=tcp&headerType=none#MyRealityServer</code></pre>
+
+        <p><strong>Replace:</strong></p>
+        <ul>
+            <li><code>UUID</code> → Your generated UUID</li>
+            <li><code>SERVER_IP</code> → Your server's public IP or domain</li>
+            <li><code>PUBLIC_KEY</code> → Your public key from x25519</li>
+        </ul>
+
+        <h3>Client Software Setup</h3>
+
+        <h4>Android (v2rayNG or NekoBox)</h4>
+        <ol>
+            <li>Install v2rayNG or NekoBox from GitHub or Google Play</li>
+            <li>Click "+" to add server</li>
+            <li>Select "Import from Clipboard" or "Manual Input"</li>
+            <li>Paste the connection URI or fill in details manually</li>
+            <li>Tap the server to connect</li>
+        </ol>
+
+        <h4>iOS (Shadowrocket or Sing-box)</h4>
+        <ol>
+            <li>Install Shadowrocket ($2.99) or Sing-box (free) from App Store</li>
+            <li>Tap "+" to add server</li>
+            <li>Select "VLESS" protocol</li>
+            <li>Fill in server details or scan QR code</li>
+            <li>Enable the connection</li>
+        </ol>
+
+        <h4>Windows (v2rayN)</h4>
+        <ol>
+            <li>Download v2rayN-With-Core.zip from GitHub</li>
+            <li>Extract and run v2rayN.exe</li>
+            <li>Click "Servers" → "Add VLESS server"</li>
+            <li>Fill in details or import from clipboard</li>
+            <li>Right-click tray icon → System Proxy → Automatic</li>
+        </ol>
+
+        <h4>macOS (V2RayX or Qv2ray)</h4>
+        <ol>
+            <li>Install V2RayX or Qv2ray</li>
+            <li>Add new server with VLESS protocol</li>
+            <li>Configure REALITY parameters</li>
+            <li>Connect</li>
+        </ol>
+
+        <h3>Generate QR Code (Optional)</h3>
+
+        <pre><code># Install qrencode
+sudo apt install qrencode
+
+# Generate QR code from connection URI
+qrencode -t ansiutf8 "vless://UUID@SERVER:443?..."
+
+# Or save to image
+qrencode -o connection-qr.png "vless://UUID@SERVER:443?..."</code></pre>
+
+        <h2 id="testing">9. Testing & Verification</h2>
+
+        <h3>Step 1: Test Local Xray Connection</h3>
+
+        <pre><code># Check if Xray is listening
+sudo netstat -tulpn | grep 8443
+
+# Expected: tcp  0  0 127.0.0.1:8443  0.0.0.0:*  LISTEN  [pid]/xray
+
+# Check Xray logs
+sudo tail -f /var/log/xray/access.log
+sudo tail -f /var/log/xray/error.log</code></pre>
+
+        <h3>Step 2: Test Nginx Routing</h3>
+
+        <pre><code># Check Nginx is listening on 443
+sudo netstat -tulpn | grep :443
+
+# Expected: tcp  0  0 0.0.0.0:443  0.0.0.0:*  LISTEN  [pid]/nginx
+
+# Test web server on port 8080 (from server)
+curl http://localhost:8080
+
+# Should return your website content
+
+# Check Nginx logs
+sudo tail -f /var/log/nginx/access.log
+sudo tail -f /var/log/nginx/error.log</code></pre>
+
+        <h3>Step 3: Test from Client</h3>
+
+        <ol>
+            <li><strong>Configure client</strong> with your connection details</li>
+            <li><strong>Connect</strong> using your VPN client</li>
+            <li><strong>Check connection</strong> in client app (should show connected)</li>
+            <li><strong>Test browsing:</strong>
+                <ul>
+                    <li>Visit google.com - should work</li>
+                    <li>Visit ipinfo.io - should show your server's IP</li>
+                    <li>Visit youtube.com - test video playback</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>Step 4: Verify Web Server Still Works</h3>
+
+        <pre><code># From external network, test your website
+curl -I https://yourdomain.com
+
+# Should return your web server's response
+# HTTP/1.1 200 OK
+# ...</code></pre>
+
+        <h3>Step 5: Test SNI Routing</h3>
+
+        <pre><code># Test that unknown domains route to Xray (from another machine)
+openssl s_client -connect YOUR_SERVER_IP:443 -servername unknowndomain.com
+
+# This connection attempt should reach Xray REALITY (not your web server)
+
+# Test that your domain routes to web server
+openssl s_client -connect YOUR_SERVER_IP:443 -servername yourdomain.com
+
+# This should reach your web server and show its certificate</code></pre>
+
+        <h3>Troubleshooting Connection Issues</h3>
+
+        <div class="option-card">
+            <h4>Can't Connect from Client</h4>
+            <p><strong>Check:</strong></p>
+            <ul>
+                <li>Firewall allows port 443: <code>sudo ufw status</code></li>
+                <li>Router port forwarding configured correctly</li>
+                <li>Xray is running: <code>systemctl status xray</code></li>
+                <li>Nginx is running: <code>systemctl status nginx</code></li>
+                <li>No errors in logs: <code>journalctl -u xray -n 50</code></li>
+                <li>UUID matches between server and client</li>
+                <li>Public key in client matches the pair's public key</li>
+            </ul>
+        </div>
+
+        <div class="option-card">
+            <h4>Web Server Not Accessible</h4>
+            <p><strong>Check:</strong></p>
+            <ul>
+                <li>Web server listening on 8080: <code>netstat -tulpn | grep 8080</code></li>
+                <li>SNI mapping correct in stream.conf</li>
+                <li>Domain name resolves to server IP: <code>nslookup yourdomain.com</code></li>
+                <li>Test direct access: <code>curl http://localhost:8080</code></li>
+            </ul>
+        </div>
+
+        <div class="option-card">
+            <h4>Xray Connected But No Internet</h4>
+            <p><strong>Check:</strong></p>
+            <ul>
+                <li>Server can access internet: <code>curl google.com</code></li>
+                <li>Routing rules in Xray config</li>
+                <li>Check outbound settings (should be "freedom")</li>
+                <li>DNS settings in client</li>
+            </ul>
+        </div>
+
+        <h2 id="troubleshooting">10. Comprehensive Troubleshooting</h2>
+
+        <h3>Common Issues and Solutions</h3>
+
+        <h4>Issue: "Nginx failed to start" after adding stream config</h4>
+
+        <pre><code># Test config
+sudo nginx -t
+
+# Common causes:
+# 1. Stream block inside http block (must be at same level)
+# 2. Missing stream modules
+# 3. Syntax error
+
+# Verify modules
+nginx -V 2>&1 | grep stream
+
+# If modules missing, install nginx-full or nginx-extras
+sudo apt install nginx-extras</code></pre>
+
+        <h4>Issue: "Connection refused" from client</h4>
+
+        <pre><code># Debug checklist:
+
+# 1. Port forwarding
+# Log into router, verify 443 → your server IP
+
+# 2. Firewall
+sudo ufw status
+sudo ufw allow 443/tcp
+
+# 3. Services running
+sudo systemctl status nginx
+sudo systemctl status xray
+
+# 4. Check if port is reachable from outside
+# Use online port checker: https://www.yougetsignal.com/tools/open-ports/
+# Enter your public IP and port 443
+
+# 5. Test from another network (use phone with mobile data)
+telnet YOUR_PUBLIC_IP 443</code></pre>
+
+        <h4>Issue: "TLS handshake failed" in client</h4>
+
+        <pre><code># Possible causes:
+
+# 1. Wrong server name
+# Make sure client serverName matches one in server's serverNames array
+
+# 2. Wrong public key
+# Verify client has the correct public key (from xray x25519)
+
+# 3. Dest website unreachable
+# Test from server:
+curl -I https://microsoft.com
+
+# 4. Flow mismatch
+# Both client and server must have: flow: "xtls-rprx-vision"
+
+# Check Xray logs
+sudo journalctl -u xray -n 50 --no-pager</code></pre>
+
+        <h4>Issue: Xray works but web server returns 502</h4>
+
+        <pre><code># Web server not accepting connections on 8080
+
+# 1. Verify web server is listening on 8080
+sudo netstat -tulpn | grep 8080
+
+# 2. Check web server config
+sudo nginx -t  # If using Nginx as web server too
+
+# 3. Check web server logs
+sudo tail -f /var/log/nginx/error.log
+
+# 4. Test direct connection
+curl http://localhost:8080
+
+# 5. Verify Nginx upstream config points to correct port
+grep -r "upstream web_server" /etc/nginx/</code></pre>
+
+        <h4>Issue: "ssl_preread_server_name is empty"</h4>
+
+        <pre><code># Client is not sending SNI
+
+# 1. Verify client is configured to send SNI
+# In client config, ensure serverName is set
+
+# 2. Some old clients don't support SNI
+# Update client software
+
+# 3. Check Nginx stream config has ssl_preread on
+grep "ssl_preread" /etc/nginx/stream.conf</code></pre>
+
+        <h4>Issue: High latency or slow speeds</h4>
+
+        <pre><code># 1. Enable BBR congestion control
+echo "net.core.default_qdisc=fq" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# 2. Optimize Xray buffer size (in config.json)
+# Add to streamSettings.sockopt:
+"tcpKeepAliveInterval": 30,
+"tcpFastOpen": true
+
+# 3. Choose closer dest website
+# Change dest to geographically closer site
+
+# 4. Check server resources
+htop
+df -h
+free -h
+
+# 5. Test baseline speed
+speedtest-cli</code></pre>
+
+        <h3>Debugging Tools</h3>
+
+        <pre><code># Real-time connection monitoring
+sudo tcpdump -i any port 443 -n
+
+# Check what's connecting to Nginx
+sudo netstat -antp | grep :443
+
+# Monitor Xray connections
+sudo netstat -antp | grep :8443
+
+# View all logs in real-time
+sudo tail -f /var/log/nginx/access.log /var/log/xray/access.log
+
+# Test SNI routing manually
+echo | openssl s_client -connect localhost:443 -servername microsoft.com 2>&1 | grep "Verify return code"
+
+# Check certificate chain of dest
+echo | openssl s_client -connect microsoft.com:443 -showcerts</code></pre>
+
+        <h2 id="optimization">11. Performance Optimization</h2>
+
+        <h3>System-Level Optimizations</h3>
+
+        <pre><code># /etc/sysctl.conf optimizations
+sudo nano /etc/sysctl.conf
+
+# Add these lines:
+fs.file-max = 51200
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.ipv4.tcp_rmem = 4096 87380 67108864
+net.ipv4.tcp_wmem = 4096 65536 67108864
+net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_congestion_control = bbr
+net.core.default_qdisc = fq
+
+# Apply changes
+sudo sysctl -p</code></pre>
+
+        <h3>Xray Optimization</h3>
+
+        <pre><code># Add to Xray config.json
+"policy": {
+    "levels": {
+        "0": {
+            "handshake": 4,
+            "connIdle": 300,
+            "uplinkOnly": 2,
+            "downlinkOnly": 5,
+            "bufferSize": 10240
+        }
+    },
+    "system": {
+        "statsInboundUplink": false,
+        "statsInboundDownlink": false
+    }
+}</code></pre>
+
+        <h3>Nginx Optimization</h3>
+
+        <pre><code># /etc/nginx/nginx.conf
+worker_processes auto;
+worker_rlimit_nofile 51200;
+
+events {
+    use epoll;
+    worker_connections 51200;
+    multi_accept on;
+}
+
+stream {
+    # Enable TCP Fast Open
+    tcp_nodelay on;
+
+    # Your stream config
+    include /etc/nginx/stream.conf;
+}</code></pre>
+
+        <h3>Monitoring Performance</h3>
+
+        <pre><code># Monitor bandwidth usage
+sudo apt install vnstat
+vnstat -l  # Live traffic
+vnstat -h  # Hourly stats
+vnstat -d  # Daily stats
+
+# Monitor connections
+watch -n 1 "netstat -antp | grep -E ':(443|8443|8080)' | wc -l"
+
+# Monitor system resources
+htop
+
+# Check Xray statistics (if enabled)
+curl http://127.0.0.1:10085/stats/query?pattern=</code></pre>
+
+        <h2>12. Alternative Port Setup (Quick Guide)</h2>
+
+        <p>If you decided to use Option 2 (alternative port instead of SNI routing):</p>
+
+        <h3>Xray Configuration for Port 8443</h3>
+
+        <pre><code>{
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",  # Note: listen on all interfaces, not just localhost
+      "port": 8443,         # Your chosen alternative port
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "YOUR_UUID",
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "dest": "microsoft.com:443",
+          "serverNames": ["microsoft.com"],
+          "privateKey": "YOUR_PRIVATE_KEY",
+          "shortIds": ["", "0123456789abcdef"]
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
+  ]
+}</code></pre>
+
+        <h3>Firewall and Router Configuration</h3>
+
+        <pre><code># Open port in firewall
+sudo ufw allow 8443/tcp
+sudo ufw reload
+
+# Verify
+sudo ufw status
+
+# Configure router port forwarding:
+# External Port: 8443 → Internal IP: 192.168.1.x → Internal Port: 8443</code></pre>
+
+        <h3>Client Configuration for Alternative Port</h3>
+
+        <p>Connection URI:</p>
+
+        <pre><code>vless://UUID@SERVER_IP:8443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=microsoft.com&fp=chrome&pbk=PUBLIC_KEY&sid=0123456789abcdef&type=tcp#MyRealityServer-8443</code></pre>
+
+        <p>Note the port is 8443 instead of 443.</p>
+
+        <h2>13. "Steal Yourself" Configuration</h2>
+
+        <p>For users with their own domain who want maximum stealth:</p>
+
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>Domain name (e.g., example.com)</li>
+            <li>Subdomain pointing to server (e.g., proxy.example.com)</li>
+            <li>Web server (Nginx/Caddy) with TLS certificate</li>
+        </ul>
+
+        <h3>Xray Configuration</h3>
+
+        <pre><code>{
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": 443,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "YOUR_UUID",
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": [
+          {
+            "dest": "127.0.0.1:8080",  # Your web server
+            "xver": 1
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "dest": "proxy.example.com:4123",  # Your own domain!
+          "serverNames": ["proxy.example.com"],
+          "privateKey": "YOUR_PRIVATE_KEY",
+          "shortIds": ["", "0123456789abcdef"]
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
+  ]
+}</code></pre>
+
+        <h3>Caddy Configuration (Alternative to Nginx)</h3>
+
+        <pre><code># /etc/caddy/Caddyfile
+proxy.example.com {
+    bind 127.0.0.1:4123
+    tls your-email@example.com
+    reverse_proxy localhost:8080
+}</code></pre>
+
+        <div class="alert alert-info">
+            <strong>How it works:</strong> Xray listens on 443, uses your domain's real TLS certificate via REALITY, and forwards unauthenticated traffic to your web server. To observers, it's indistinguishable from a normal HTTPS website!
+        </div>
+
+        <h2>14. Maintenance and Updates</h2>
+
+        <h3>Regular Maintenance Tasks</h3>
+
+        <pre><code># Update Xray
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+
+# Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# Check log sizes
+du -sh /var/log/xray/
+du -sh /var/log/nginx/
+
+# Rotate logs if needed
+sudo logrotate -f /etc/logrotate.d/xray
+sudo logrotate -f /etc/logrotate.d/nginx
+
+# Check disk space
+df -h
+
+# Backup configuration
+tar -czf xray-backup-$(date +%F).tar.gz /usr/local/etc/xray/ /etc/nginx/
+
+# Monitor for issues
+sudo systemctl status xray nginx</code></pre>
+
+        <h3>Security Best Practices</h3>
+
+        <ul>
+            <li>✓ Change UUID periodically (every 3-6 months)</li>
+            <li>✓ Regenerate REALITY keys occasionally</li>
+            <li>✓ Monitor access logs for suspicious activity</li>
+            <li>✓ Keep server software updated</li>
+            <li>✓ Use fail2ban to prevent brute force attacks</li>
+            <li>✓ Limit SSH access to key-based authentication</li>
+            <li>✓ Set up automatic security updates</li>
+            <li>✓ Backup configurations regularly</li>
+        </ul>
+
+        <h2>15. Quick Reference</h2>
+
+        <h3>Common Commands</h3>
+
+        <table>
+            <tr>
+                <th>Task</th>
+                <th>Command</th>
+            </tr>
+            <tr>
+                <td>Restart Xray</td>
+                <td><code>sudo systemctl restart xray</code></td>
+            </tr>
+            <tr>
+                <td>Restart Nginx</td>
+                <td><code>sudo systemctl restart nginx</code></td>
+            </tr>
+            <tr>
+                <td>View Xray logs</td>
+                <td><code>sudo journalctl -u xray -f</code></td>
+            </tr>
+            <tr>
+                <td>View Nginx logs</td>
+                <td><code>sudo tail -f /var/log/nginx/error.log</code></td>
+            </tr>
+            <tr>
+                <td>Test Nginx config</td>
+                <td><code>sudo nginx -t</code></td>
+            </tr>
+            <tr>
+                <td>Test Xray config</td>
+                <td><code>xray run -test -c /usr/local/etc/xray/config.json</code></td>
+            </tr>
+            <tr>
+                <td>Check port listening</td>
+                <td><code>sudo netstat -tulpn | grep -E ':(443|8443|8080)'</code></td>
+            </tr>
+            <tr>
+                <td>Generate new UUID</td>
+                <td><code>xray uuid</code></td>
+            </tr>
+            <tr>
+                <td>Generate new keys</td>
+                <td><code>xray x25519</code></td>
+            </tr>
+            <tr>
+                <td>Check Xray version</td>
+                <td><code>xray version</code></td>
+            </tr>
+        </table>
+
+        <h3>Configuration File Locations</h3>
+
+        <table>
+            <tr>
+                <th>File</th>
+                <th>Location</th>
+            </tr>
+            <tr>
+                <td>Xray config</td>
+                <td>/usr/local/etc/xray/config.json</td>
+            </tr>
+            <tr>
+                <td>Nginx main config</td>
+                <td>/etc/nginx/nginx.conf</td>
+            </tr>
+            <tr>
+                <td>Nginx stream config</td>
+                <td>/etc/nginx/stream.conf</td>
+            </tr>
+            <tr>
+                <td>Nginx sites</td>
+                <td>/etc/nginx/sites-available/</td>
+            </tr>
+            <tr>
+                <td>Xray logs</td>
+                <td>/var/log/xray/</td>
+            </tr>
+            <tr>
+                <td>Nginx logs</td>
+                <td>/var/log/nginx/</td>
+            </tr>
+        </table>
+
+        <h2>Summary</h2>
+
+        <div class="alert alert-success">
+            <strong>Congratulations!</strong> You now have Xray REALITY running alongside your web server on port 443. This setup provides:
+            <ul>
+                <li>✓ Maximum stealth (port 443 HTTPS traffic)</li>
+                <li>✓ GFW resistance (mimics legitimate websites)</li>
+                <li>✓ Both services working simultaneously</li>
+                <li>✓ Professional, production-ready configuration</li>
+            </ul>
+        </div>
+
+        <h3>What You've Accomplished</h3>
+
+        <ol>
+            <li>✓ Installed and configured Nginx with stream module</li>
+            <li>✓ Set up SNI-based routing for port multiplexing</li>
+            <li>✓ Installed and configured Xray with REALITY protocol</li>
+            <li>✓ Maintained your existing web server functionality</li>
+            <li>✓ Created secure client configurations</li>
+            <li>✓ Optimized for performance and reliability</li>
+        </ol>
+
+        <h3>Next Steps</h3>
+
+        <ul>
+            <li>Share connection details securely with your friend in China</li>
+            <li>Test connection stability over several days</li>
+            <li>Monitor logs for any issues</li>
+            <li>Set up automatic backups of configurations</li>
+            <li>Consider running additional protocols as backup (optional)</li>
+        </ul>
+
+        <div class="alert alert-warning">
+            <strong>Remember:</strong> The GFW is constantly evolving. Keep Xray updated, monitor community forums for new developments, and be prepared to adjust configurations if needed. The REALITY protocol is currently one of the most effective methods (November 2024).
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #ddd; text-align: center; color: #666;">
+            <p><strong>Document Version:</strong> 1.0 (November 2024)</p>
+            <p><strong>Based on:</strong> Official Xray Documentation, Community Examples, Real-World Deployments</p>
+            <p><em>Good luck with your setup! Stay connected. 🌐</em></p>
+        </div>
+    </div>
+</body>
+</html>
